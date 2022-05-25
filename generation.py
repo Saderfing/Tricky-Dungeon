@@ -12,6 +12,7 @@ class Room:
     def set_topleft(self,new_topleft:list):
         self.topleft = new_topleft
         self.downright = [self.topleft[0] + self.size_x, self.topleft[1] + self.size_y]
+        self.center = [int((self.topleft[0] + self.downright[0])/2), int((self.topleft[1] + self.downright[1])/2)]
 
     def set_num_mob(self,new_num_mob:int):
         self.num_mob = new_num_mob
@@ -89,7 +90,6 @@ class Generator:
         self.place_room()
         
         for room in range(1, len(self.room_list)):
-            print(self.room_list[room-1].center, self.room_list[room].center, end = ", ")
             self.make_corridor(self.room_list[room-1].center, self.room_list[room].center)
         
 
