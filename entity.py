@@ -22,7 +22,17 @@ class Entity:
         self.velocity = [0, 0] # 2 integers to represent the x and y velocity
 
 
+class Arrow:
+    def __init__(self, pos, angle, speed) -> None:
+        self.pos = pos
+        self.angle = angle
+        self.speed = speed
+
+        self.GFX = pygame.image.load('assets/arrow.png').convert_alpha()
     
+    @classmethod
+    def update(self):
+        pass
 
 class Player(Entity):
     def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int):
@@ -38,23 +48,32 @@ class Player(Entity):
                      pygame.K_RIGHT: 0, 
                      pygame.K_LEFT: 0, 
                      pygame.K_SPACE:0}
+        
+        self.mouse = [0, 0, 0]
+        
+        
 
         
     def update(self):
+        self._check_inputs()
+        self.attack_input()
         self.input_movement()
         self.apply_movement()
+        
 
     def input_movement(self):
-            
-        self._check_inputs()
         
         self.velocity[0] = (self.keys[pygame.K_RIGHT] - self.keys[pygame.K_LEFT]) * self.speed
         self.velocity[1] = (self.keys[pygame.K_DOWN] - self.keys[pygame.K_UP]) * self.speed
         
     def _check_inputs(self):
-        inputs = pygame.key.get_pressed()
+        key_inputs = pygame.key.get_pressed()
+        mouse_inputs = pygame.mouse.get_pressed()
         for key in self.keys.keys():
-            self.keys[key] = inputs[key]
+            self.keys[key] = key_inputs[key]
+        for mouse in range(len(self.mouse)):
+            self.mouse[mouse] = int(mouse_inputs[mouse])
+        
     
     def apply_movement(self):
         if self.pos[0] + self.velocity[0] < 0 or self.pos[0] + self.velocity[0] + self.width >= 800:
@@ -66,7 +85,6 @@ class Player(Entity):
         self.pos[0] += self.velocity[0]
         self.pos[1] += self.velocity[1]
 
-    
     
 if __name__ == '__main__':
     #pygame.init()
