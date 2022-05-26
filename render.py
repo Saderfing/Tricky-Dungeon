@@ -4,8 +4,9 @@ class Render:
     def __init__(self, screen:pygame.Surface) -> None:
         self.screen = screen
 
-        self.TILE_SIZE = 32
+        self.TILE_SIZE = 50
         self.FPS = 60
+        self.toggled_fps = True
 
         self.run = True
 
@@ -21,8 +22,10 @@ class Render:
     
     def draw_player(self,player):
         pass
-    def draw_debug(self):
-        pass
+    def draw_debug(self, clock:pygame.time.Clock):
+        defaultFont = pygame.font.Font(pygame.font.get_default_font(), 25)
+
+        if self.toggled_fps: self.screen.blit(defaultFont.render(str(round(clock.get_fps())), True, (250,10,10)), (10,10))
     def get_rect_list(self,the_map:list):
         rect_list = []
 
