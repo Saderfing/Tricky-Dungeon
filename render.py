@@ -1,37 +1,33 @@
 import pygame
-from random import randint
-
 
 class Render:
-    def __init__(self, screen:pygame.Surface, size:tuple) -> None:
-        self.size = size
-
-        self.clock = pygame.time.Clock()
+    def __init__(self, screen:pygame.Surface) -> None:
         self.screen = screen
 
-        self.WHITE = (255,255,255)
+        self.TILE_SIZE = 32
         self.FPS = 60
-        self.TILE_SIZE = 10
 
         self.run = True
-        self.toggled_fps = False
-    def random_color(self):
-        r = pygame.Surface((self.TILE_SIZE, self.TILE_SIZE))
-        r.fill((randint(125,200), randint(125,200), randint(125,200)))
-        return r
-    def render_tile(self,tiles:list):
-        
-        surf_white = pygame.Surface((self.TILE_SIZE,self.TILE_SIZE))
-        surf_white.fill(self.WHITE)
-        self.screen.fill((0,0,0))
 
+        self.textures = {0:pygame.Surface((self.TILE_SIZE,self.TILE_SIZE)), 1:pygame.Surface((self.TILE_SIZE,self.TILE_SIZE))}
+        for i in self.textures.keys():
+            if i == 1: self.textures[i].fill((20,20,20)) 
+            if i == 0: self.textures[i].fill((255,255,255))
+    
+    def draw_tilemap(self, tiles:list):
         for y in range(len(tiles)):
             for x in range(len(tiles[y])):
-                if tiles[y][x] != 1  : self.screen.blit(surf_white,(x*self.TILE_SIZE,y*self.TILE_SIZE))
-        
-        
-        defaultFont = pygame.font.Font(pygame.font.get_default_font(), 25)
+                self.screen.blit(self.textures[tiles[y][x]],(x*self.TILE_SIZE,y*self.TILE_SIZE))
+    
+    def draw_player(self,player):
+        pass
+    def draw_debug(self):
+        pass
+    def get_rect_list(self,the_map:list):
+        rect_list = []
 
-        if self.toggled_fps: self.screen.blit(defaultFont.render(str(self.clock.get_fps()), True, (250,10,10)), (10,10))
-        pygame.display.update()
-        self.clock.tick(self.FPS)
+        for y in range(len(the_map)):
+            for x in range(len(the_map[y])):
+                if the_map[y][x] == 0:
+                    rect_list.append(pygame.Surface((self.TILE_SIZE, self.TILE_SIZE)).get_rect(topleft=(x*self.TILE_SIZE, y*self.TILE_SIZE)))
+        return rect_list

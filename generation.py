@@ -19,7 +19,6 @@ class Room:
 
 
 class RoomManager:
-    @classmethod
     def __init__(self, num_room:int) -> None:
         self.num_room = num_room
         self.small_room = [[4,4], "small"]
@@ -35,6 +34,7 @@ class Generator:
         self.room_list = []
 
         self.roomManager = RoomManager(5)
+        self.rect_list = []
     
     def create_empty_map(self):
         self.the_map = [[1 for x in range(self.map_size[0])] for y in range(self.map_size[1])]
@@ -66,7 +66,7 @@ class Generator:
             
             for y in range(new_room.topleft[1], new_room.downright[1]):
                 for x in range(new_room.topleft[0], new_room.downright[0]):
-                    self.the_map[y][x] = 8
+                    self.the_map[y][x] = 0
     
     def make_corridor(self, pointA:list, pointB:list):
         width = 1
@@ -91,15 +91,16 @@ class Generator:
         
         for room in range(1, len(self.room_list)):
             self.make_corridor(self.room_list[room-1].center, self.room_list[room].center)
-        
+
+
 
 if __name__ == "__main__":
     import pygame
-    import render
+    import render_lib
 
     pygame.init()
     screen = pygame.display.set_mode((800,800))
-    renderer = render.Render(screen,(800,800))
+    renderer = render_lib.Render(screen,(800,800))
 
     generator = Generator([80,40])
     generator.generate()
