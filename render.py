@@ -1,11 +1,10 @@
 import pygame
 
 class Render:
-    def __init__(self, screen:pygame.Surface, display:pygame.Surface ) -> None:
+    def __init__(self, screen:pygame.Surface) -> None:
         self.screen = screen
-        self.display = display
-        
-        self.TILE_SIZE = 16
+
+        self.TILE_SIZE = 32
         self.FPS = 60
 
         self.run = True
