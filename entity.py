@@ -120,9 +120,10 @@ if __name__ == '__main__':
     player = Player([0, 0], 100, 50, 3, 10)
     
     while True:
+
         win.fill((0,0,0))
-        pygame.draw.circle(win, (255,255,255), (100,100), 5)
         win.blit(player.GFX, player.pos)
+
         player.update()
         
         for event in pygame.event.get():
