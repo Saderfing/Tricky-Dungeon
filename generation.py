@@ -21,9 +21,9 @@ class Room:
 class RoomManager:
     def __init__(self, num_room:int) -> None:
         self.num_room = num_room
-        self.small_room = [[4,4], "small"]
-        self.medium_room =  [[5,5], "medium"]
-        self.big_room = [[7,7], "big"]
+        self.small_room = [[7,7], "small"]
+        self.medium_room =  [[10,10], "medium"]
+        self.big_room = [[13,13], "big"]
         self.normal_room = [self.small_room, self.medium_room, self.big_room]
 
 class Generator:
@@ -33,7 +33,7 @@ class Generator:
         self.the_map = []
         self.room_list = []
 
-        self.roomManager = RoomManager(5)
+        self.roomManager = RoomManager(8)
         self.rect_list = []
     
     def create_empty_map(self):
@@ -69,7 +69,7 @@ class Generator:
                     self.the_map[y][x] = 0
     
     def make_corridor(self, pointA:list, pointB:list):
-        width = 1
+        width = 2
         if rand.random() > 0.5:
             corner_pos = [pointA[0], pointB[1]]
         else:
