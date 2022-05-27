@@ -1,5 +1,6 @@
 import pygame
 from random import randint
+import math
 
 class Entity:
     def __init__(self, pos:list, GFX,HP:int, DF:int, SP:int, DMG:int):
@@ -40,8 +41,11 @@ class Player(Entity):
         graphics = pygame.image.load('assets/player.png').convert_alpha()
         super().__init__(pos, graphics, HP, DF, SP, DMG)
         self.arrows = 5
+        self.arrow_speed = 3
+        self.shot_arrows = []
         self.fire_rate = 1
         self.cooldown = 1
+        self.is_on_cooldown = False
         
         self.keys = {pygame.K_UP: 0, 
                      pygame.K_DOWN: 0, 
@@ -56,10 +60,32 @@ class Player(Entity):
         
     def update(self):
         self._check_inputs()
-        self.attack_input()
+        
+        self.shoot()
+        
         self.input_movement()
         self.apply_movement()
+    
+    def _get_mouse_angle(self):
+        point = pygame.mouse.get_pos()
         
+        dist_x = point[0] - self.pos[0] 
+        dist_y = point[1] - self.pos[1]
+        
+        if dist_x == float(0): # avoid division by 0
+            dist_x += 0.00001
+        angle = math.atan2(dist_y, dist_x)
+
+        angle = round(math.degrees(angle))
+        return angle
+        
+    def shoot(self):
+        if self.is_on_cooldown:
+            return
+        
+        angle = self._get_mouse_angle()
+        
+        self.shot_arrows.append(Arrow(self.pos, angle, self.arrow_speed))
 
     def input_movement(self):
         
@@ -95,7 +121,7 @@ if __name__ == '__main__':
     
     while True:
         win.fill((0,0,0))
-        
+        pygame.draw.circle(win, (255,255,255), (100,100), 5)
         win.blit(player.GFX, player.pos)
         player.update()
         
