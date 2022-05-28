@@ -37,7 +37,6 @@ class Arrow:
 
 class Player(Entity):
     def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int):
-        HP, DF, SP, DMG = 100, 50, 1, 10
         graphics = pygame.image.load('assets/player.png').convert_alpha()
         super().__init__(pos, graphics, HP, DF, SP, DMG)
         self.arrows = 5
@@ -102,12 +101,6 @@ class Player(Entity):
         
     
     def apply_movement(self):
-        if self.pos[0] + self.velocity[0] < 0 or self.pos[0] + self.velocity[0] + self.width >= 800:
-            self.velocity[0] = 0
-
-        if self.pos[1] + self.velocity[1] < 0 or self.pos[1] + self.velocity[1] + self.height >= 400:
-            self.velocity[1] = 0
-
         self.pos[0] += self.velocity[0]
         self.pos[1] += self.velocity[1]
 

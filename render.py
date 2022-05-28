@@ -7,6 +7,7 @@ class Render:
         self.TILE_SIZE = 50
         self.FPS = 60
         self.toggled_fps = True
+        self.player_scroll = [0,0]
 
         self.run = True
 
@@ -19,10 +20,15 @@ class Render:
     def draw_tilemap(self, tiles:list):
         for y in range(len(tiles)):
             for x in range(len(tiles[y])):
-                self.screen.blit(self.textures[tiles[y][x]],(x*self.TILE_SIZE,y*self.TILE_SIZE))
-    
+                self.screen.blit(self.textures[tiles[y][x]],((x*self.TILE_SIZE)-self.player_scroll[0],(y*self.TILE_SIZE)-self.player_scroll[1]))
+    def calculate_scroll(self, player):
+        SCREEN_SIZE = self.screen.get_size()
+        self.player_scroll[0] += int((player.pos[0] - self.player_scroll[0] - (SCREEN_SIZE[0]/2))/10)
+        self.player_scroll[1] += int((player.pos[1] - self.player_scroll[1] - (SCREEN_SIZE[1]/2))/10)
+
     def draw_player(self,player):
-        pass
+        
+        self.screen.blit(player.GFX, (player.pos[0] - self.player_scroll[0],  player.pos[1]- self.player_scroll[1]))
     def draw_debug(self, clock:pygame.time.Clock):
         defaultFont = pygame.font.Font(pygame.font.get_default_font(), 25)
 
