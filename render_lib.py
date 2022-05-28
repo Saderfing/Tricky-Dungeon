@@ -11,7 +11,7 @@ class Render:
 
         self.WHITE = (255,255,255)
         self.FPS = 60
-        self.TILE_SIZE = 10
+        self.TILE_SIZE = 5
 
         self.run = True
         self.toggled_fps = False
