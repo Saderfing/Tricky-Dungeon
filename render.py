@@ -10,10 +10,11 @@ class Render:
 
         self.run = True
 
-        self.textures = {0:pygame.Surface((self.TILE_SIZE,self.TILE_SIZE)), 1:pygame.Surface((self.TILE_SIZE,self.TILE_SIZE))}
-        for i in self.textures.keys():
+        self.textures = {1:pygame.transform.scale(pygame.image.load("assets/tiles/wall3.png"), (self.TILE_SIZE, self.TILE_SIZE)).convert(),
+                         0:pygame.transform.scale(pygame.image.load("assets/tiles/floor3.png"), (self.TILE_SIZE, self.TILE_SIZE)).convert()}
+        """for i in self.textures.keys():
             if i == 1: self.textures[i].fill((20,20,20)) 
-            if i == 0: self.textures[i].fill((255,255,255))
+            if i == 0: self.textures[i].fill((255,255,255))"""
     
     def draw_tilemap(self, tiles:list):
         for y in range(len(tiles)):
