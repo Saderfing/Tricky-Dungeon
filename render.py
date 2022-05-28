@@ -1,4 +1,5 @@
 import pygame
+from utils import clamp
 
 class Render:
     def __init__(self, screen:pygame.Surface) -> None:
@@ -6,6 +7,7 @@ class Render:
 
         self.TILE_SIZE = 50
         self.FPS = 60
+        self.RENDER_DISTANCE = 20
         self.toggled_fps = True
         self.player_scroll = [0,0]
 
@@ -17,9 +19,10 @@ class Render:
             if i == 1: self.textures[i].fill((20,20,20)) 
             if i == 0: self.textures[i].fill((255,255,255))"""
     
-    def draw_tilemap(self, tiles:list):
-        for y in range(len(tiles)):
-            for x in range(len(tiles[y])):
+    def draw_tilemap(self, tiles:list, player):
+
+        for y in range(max(int(player.pos[1]/self.TILE_SIZE) - self.RENDER_DISTANCE,  0), min(int(player.pos[1]/self.TILE_SIZE) + self.RENDER_DISTANCE, len(tiles))):
+            for x in range(max(int(player.pos[0]/self.TILE_SIZE) - self.RENDER_DISTANCE,  0), min(int(player.pos[0]/self.TILE_SIZE) + self.RENDER_DISTANCE, len(tiles))):
                 self.screen.blit(self.textures[tiles[y][x]],((x*self.TILE_SIZE)-self.player_scroll[0],(y*self.TILE_SIZE)-self.player_scroll[1]))
     def calculate_scroll(self, player):
         SCREEN_SIZE = self.screen.get_size()
