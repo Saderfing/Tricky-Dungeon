@@ -32,14 +32,15 @@ class Arrow:
         
         self.speed = speed
         self.damage = damage
-        self.velocity = [math.cos(self.angle), math.sin(self.angle)]
+        self.velocity = [math.cos(self.angle) * self.speed, math.sin(self.angle) * self.speed]
 
-        self.GFX = pygame.image.load('assets/arrow.png').convert_alpha()
+        GFX = pygame.image.load('assets/arrow.png').convert_alpha()
+        self.GFX = pygame.transform.rotate(GFX, self.angle)
     
     def update(self):
         
         self.pos[0] += self.velocity[0]
-        self.pos[1] += self.velocity[1]
+        self.pos[1] += self.velocity[1] 
         
         
 class Player(Entity):
@@ -49,7 +50,7 @@ class Player(Entity):
         self.angle = self._get_mouse_angle()
         
         self.arrows = 5
-        self.arrow_speed = 3
+        self.arrow_speed = 10
         self.shot_arrows = []
         self.cooldown = 1000
         self.on_cooldown = False
@@ -77,7 +78,7 @@ class Player(Entity):
         vect = [point[0] - self.pos[0], point[1] - self.pos[1]]
         
         angle = math.atan2(vect[1], vect[0])
-        self.GFX = pygame.transform.rotate(self.GFX, -math.degrees(angle))
+        #self.GFX = pygame.transform.rotate(self.GFX, -math.degrees(angle))
         self.angle = angle
             
     def shoot(self):
@@ -126,16 +127,12 @@ if __name__ == '__main__':
     FPS = 60
     while True:
         clock.tick(FPS)
-
         
         win.fill((0,0,0))
         player.update()
         win.blit(player.GFX, player.pos)
         for arrow in player.shot_arrows:
             win.blit(arrow.GFX, arrow.pos)
-        
-
-        
         
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -144,3 +141,32 @@ if __name__ == '__main__':
             
         pygame.display.update()
         
+
+
+def blitRotate(surf, image, pos, originPos, angle):
+
+    # calcaulate the axis aligned bounding box of the rotated image
+    w, h       = image.get_size()
+    box        = [pygame.math.Vector2(p) for p in [(0, 0), (w, 0), (w, -h), (0, -h)]]
+    box_rotate = [p.rotate(angle) for p in box]
+    min_box    = (min(box_rotate, key=lambda p: p[0])[0], min(box_rotate, key=lambda p: p[1])[1])
+    max_box    = (max(box_rotate, key=lambda p: p[0])[0], max(box_rotate, key=lambda p: p[1])[1])
+
+    # calculate the translation of the pivot 
+    pivot        = pygame.math.Vector2(originPos[0], -originPos[1])
+    pivot_rotate = pivot.rotate(angle)
+    pivot_move   = pivot_rotate - pivot
+
+    # calculate the upper left origin of the rotated image
+    origin = (pos[0] - originPos[0] + min_box[0] - pivot_move[0], pos[1] - originPos[1] - max_box[1] + pivot_move[1])
+
+    # get a rotated image
+    rotated_image = pygame.transform.rotate(image, angle)
+
+    # rotate and blit the image
+    surf.blit(rotated_image, origin)
+
+    # draw rectangle around the image
+    pygame.draw.rect (surf, (255, 0, 0), (*origin, *rotated_image.get_size()),2)
+
+
