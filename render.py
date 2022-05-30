@@ -1,5 +1,4 @@
 import pygame
-from utils import clamp
 
 class Render:
     def __init__(self, screen:pygame.Surface) -> None:
@@ -7,17 +6,14 @@ class Render:
 
         self.TILE_SIZE = 50
         self.FPS = 60
-        self.RENDER_DISTANCE = 20
+        self.RENDER_DISTANCE = 15
         self.toggled_fps = True
         self.player_scroll = [0,0]
 
         self.run = True
 
-        self.textures = {1:pygame.transform.scale(pygame.image.load("assets/tiles/wall3.png"), (self.TILE_SIZE, self.TILE_SIZE)).convert(),
-                         0:pygame.transform.scale(pygame.image.load("assets/tiles/floor3.png"), (self.TILE_SIZE, self.TILE_SIZE)).convert()}
-        """for i in self.textures.keys():
-            if i == 1: self.textures[i].fill((20,20,20)) 
-            if i == 0: self.textures[i].fill((255,255,255))"""
+        self.textures = {1:self._scale(pygame.image.load("assets/tiles/wall3.png")).convert(),
+                         0:self._scale(pygame.image.load("assets/tiles/floor3.png")).convert()}
     
     def draw_tilemap(self, tiles:list, player):
 
@@ -44,3 +40,6 @@ class Render:
                 if the_map[y][x] == 0:
                     rect_list.append(pygame.Surface((self.TILE_SIZE, self.TILE_SIZE)).get_rect(topleft=(x*self.TILE_SIZE, y*self.TILE_SIZE)))
         return rect_list
+
+    def _scale(self, image:pygame.Surface):
+        return pygame.transform.scale(image,  (self.TILE_SIZE, self.TILE_SIZE))
