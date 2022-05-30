@@ -53,7 +53,7 @@ class Player(Entity):
         super().__init__(pos, graphics, HP, DF, SP, DMG)
         self.angle = self._get_mouse_angle()
         self.blit_pos = [0, 0]
-        self.GFX.set_colorkey((0,0,0)).convert_alpha()
+        self.GFX.set_colorkey((0,0,0))
         
         
         self.arrows = 5
@@ -85,7 +85,7 @@ class Player(Entity):
         vect = [point[0] - self.pos[0], point[1] - self.pos[1]]
 
         angle = math.atan2(vect[1], vect[0])
-        self.GFX = pygame.transform.rotate(self.GFX, self.angle)
+        #self.GFX = pygame.transform.rotate(self.GFX, self.angle)
         return angle
 
     def shoot(self):
