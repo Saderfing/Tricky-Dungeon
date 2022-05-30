@@ -52,7 +52,10 @@ class Player(Entity):
         graphics = pygame.image.load('assets/player.png').convert_alpha()
         super().__init__(pos, graphics, HP, DF, SP, DMG)
         self.angle = self._get_mouse_angle()
-
+        self.blit_pos = [0, 0]
+        self.GFX.set_colorkey((0,0,0)).convert_alpha()
+        
+        
         self.arrows = 5
         self.arrow_speed = 10
         self.shot_arrows = []
@@ -82,8 +85,8 @@ class Player(Entity):
         vect = [point[0] - self.pos[0], point[1] - self.pos[1]]
 
         angle = math.atan2(vect[1], vect[0])
-        #self.GFX = pygame.transform.rotate(self.GFX, -math.degrees(angle))
-        self.angle = angle
+        self.GFX = pygame.transform.rotate(self.GFX, self.angle)
+        return angle
 
     def shoot(self):
         if pygame.time.get_ticks() - self.last_shot > self.cooldown:
@@ -121,7 +124,7 @@ class Player(Entity):
 
 if __name__ == '__main__':
     #pygame.init()
-    print(uuid.uuid1())
+
     WIDTH = 800
     HEIGHT = 400
     win = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -134,7 +137,7 @@ if __name__ == '__main__':
 
         win.fill((0,0,0))
         player.update()
-        win.blit(player.GFX, player.pos)
+        win.blit(player.GFX, player.blit_pos)
         for arrow in player.shot_arrows:
             win.blit(arrow.GFX, arrow.pos)
 
