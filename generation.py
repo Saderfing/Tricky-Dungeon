@@ -21,9 +21,12 @@ class Room:
 class RoomManager:
     def __init__(self, num_room:int) -> None:
         self.num_room = num_room
-        self.small_room = [[7,7], "small"]
-        self.medium_room =  [[10,10], "medium"]
-        self.big_room = [[13,13], "big"]
+        self.small_room = [[10,10], "small"]
+        self.medium_room =  [[14,14], "medium"]
+        self.big_room = [[16,16], "big"]
+        self.entrance_room = [[5,5], "entrance"]
+        self.boss_room = [[17, 17], "boss"]
+        self.chest_room = [[5,4], "chest"]
         self.normal_room = [self.small_room, self.medium_room, self.big_room]
 
 class Generator:
@@ -33,43 +36,80 @@ class Generator:
         self.the_map = []
         self.room_list = []
 
-        self.roomManager = RoomManager(8)
+        self.roomManager = RoomManager(5)
         self.rect_list = []
     
     def create_empty_map(self):
         self.the_map = [[1 for x in range(self.map_size[0])] for y in range(self.map_size[1])]
     
-    def place_room(self):
-        for i in range(self.roomManager.num_room):
-            room_to_place = rand.choice(self.roomManager.normal_room)
-            try_place_x = rand.randint(1,self.map_size[0]-1-room_to_place[0][0])
-            try_place_y = rand.randint(1,self.map_size[1]-1-room_to_place[0][1])
+    def place_room(self, room_type_list:list):
+        
+        room_to_place = rand.choice(room_type_list)
+        try_place_x = rand.randint(1,self.map_size[0]-1-room_to_place[0][0])
+        try_place_y = rand.randint(1,self.map_size[1]-1-room_to_place[0][1])
 
-            new_room = Room(room_to_place[0], [try_place_x, try_place_y] ,0, room_to_place[1])
+        new_room = Room(room_to_place[0], [try_place_x, try_place_y] ,0, room_to_place[1])
+        
+        #print("pos x", try_place_x, "pos y", try_place_y)
+
+        for room in self.room_list:
             
-            #print("pos x", try_place_x, "pos y", try_place_y)
-
-            for room in self.room_list:
+            while new_room.topleft[0] <= room.downright[0] and new_room.downright[0] >= room.topleft[0] and new_room.topleft[1] <= room.downright[1] and new_room.downright[1] >= room.topleft[1]:
                 
-                while new_room.topleft[0] <= room.downright[0] and new_room.downright[0] >= room.topleft[0] and new_room.topleft[1] <= room.downright[1] and new_room.downright[1] >= room.topleft[1]:
-                    
-                    try_place_x = rand.randint(1,self.map_size[0]-room_to_place[0][0]-1)
-                    try_place_y = rand.randint(1,self.map_size[1]-room_to_place[0][1]-1)
-                    new_room.set_topleft([try_place_x, try_place_y])
-                    #print("---------- place not found ------------ ")
-            #print("###################### Place found ######################")
-            #print("pos x", try_place_x, "pos y", try_place_y)
+                try_place_x = rand.randint(1,self.map_size[0]-room_to_place[0][0]-1)
+                try_place_y = rand.randint(1,self.map_size[1]-room_to_place[0][1]-1)
+                new_room.set_topleft([try_place_x, try_place_y])
+                #print("---------- place not found ------------ ")
+        #print("###################### Place found ######################")
+        #print("pos x", try_place_x, "pos y", try_place_y)
 
-            
-            self.room_list.append(new_room)
-            #print(self.room_list)
-            
-            for y in range(new_room.topleft[1], new_room.downright[1]):
-                for x in range(new_room.topleft[0], new_room.downright[0]):
-                    self.the_map[y][x] = 0
+        
+        self.room_list.append(new_room)
+        #print(self.room_list)
+        
+        for y in range(new_room.topleft[1], new_room.downright[1]):
+            for x in range(new_room.topleft[0], new_room.downright[0]):
+                self.the_map[y][x] = 0
     
+    def place_chest_room(self):
+        
+        room_to_place = self.roomManager.chest_room
+        try_place_x = rand.randint(1,self.map_size[0]-1-room_to_place[0][0])
+        try_place_y = rand.randint(1,self.map_size[1]-1-room_to_place[0][1])
+
+        new_room = Room(room_to_place[0], [try_place_x, try_place_y] ,0, room_to_place[1])
+
+        for room in self.room_list:
+            
+            while new_room.topleft[0] <= room.downright[0] and new_room.downright[0] >= room.topleft[0] and new_room.topleft[1] <= room.downright[1] and new_room.downright[1] >= room.topleft[1]:
+                
+                try_place_x = rand.randint(1,self.map_size[0]-room_to_place[0][0]-1)
+                try_place_y = rand.randint(1,self.map_size[1]-room_to_place[0][1]-1)
+                new_room.set_topleft([try_place_x, try_place_y])
+                #print("---------- place not found ------------ ")
+        #print("###################### Place found ######################")
+        #print("pos x", try_place_x, "pos y", try_place_y)
+        
+        self.room_list.insert(rand.randint(0,len(self.room_list)), new_room)
+        
+        for y in range(new_room.topleft[1], new_room.downright[1]):
+            for x in range(new_room.topleft[0], new_room.downright[0]):
+                self.the_map[y][x] = 0
+    
+    def place_entrance(self):
+        random_pos_x = rand.randint(1,self.map_size[0]-1-self.roomManager.entrance_room[0][0])
+        random_pos_y = rand.randint(1,self.map_size[1]-1-self.roomManager.entrance_room[0][1])
+        new_entrance = Room(self.roomManager.entrance_room[0],[random_pos_x, random_pos_y], 0, self.roomManager.entrance_room[1])
+
+        self.room_list.append(new_entrance)
+
+        for y in range(new_entrance.topleft[1], new_entrance.downright[1]):
+            for x in range(new_entrance.topleft[0], new_entrance.downright[0]):
+                self.the_map[y][x] = 0
+
+
     def make_corridor(self, pointA:list, pointB:list):
-        width = 2
+        width = 2 if rand.random() < .6 else 1
         if rand.random() > 0.5:
             corner_pos = [pointA[0], pointB[1]]
         else:
@@ -87,7 +127,13 @@ class Generator:
     def generate(self):
         self.__init__(self.map_size)
         self.create_empty_map()
-        self.place_room()
+        self.place_entrance()
+        for i in range(self.roomManager.num_room):
+            self.place_room(self.roomManager.normal_room)
+        
+        self.place_chest_room()
+
+        self.place_room([self.roomManager.boss_room])
         
         for room in range(1, len(self.room_list)):
             self.make_corridor(self.room_list[room-1].center, self.room_list[room].center)
@@ -102,7 +148,7 @@ if __name__ == "__main__":
     screen = pygame.display.set_mode((800,800))
     renderer = render_lib.Render(screen,(800,800))
 
-    generator = Generator([80,40])
+    generator = Generator([120,120])
     generator.generate()
     
 

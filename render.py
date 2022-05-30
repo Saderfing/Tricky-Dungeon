@@ -6,22 +6,28 @@ class Render:
 
         self.TILE_SIZE = 50
         self.FPS = 60
+        self.RENDER_DISTANCE = 15
         self.toggled_fps = True
+        self.player_scroll = [0,0]
 
         self.run = True
 
-        self.textures = {0:pygame.Surface((self.TILE_SIZE,self.TILE_SIZE)), 1:pygame.Surface((self.TILE_SIZE,self.TILE_SIZE))}
-        for i in self.textures.keys():
-            if i == 1: self.textures[i].fill((20,20,20)) 
-            if i == 0: self.textures[i].fill((255,255,255))
+        self.textures = {1:self._scale(pygame.image.load("assets/tiles/wall3.png")).convert(),
+                         0:self._scale(pygame.image.load("assets/tiles/floor3.png")).convert()}
     
-    def draw_tilemap(self, tiles:list):
-        for y in range(len(tiles)):
-            for x in range(len(tiles[y])):
-                self.screen.blit(self.textures[tiles[y][x]],(x*self.TILE_SIZE,y*self.TILE_SIZE))
-    
+    def draw_tilemap(self, tiles:list, player):
+
+        for y in range(max(int(player.pos[1]/self.TILE_SIZE) - self.RENDER_DISTANCE,  0), min(int(player.pos[1]/self.TILE_SIZE) + self.RENDER_DISTANCE, len(tiles))):
+            for x in range(max(int(player.pos[0]/self.TILE_SIZE) - self.RENDER_DISTANCE,  0), min(int(player.pos[0]/self.TILE_SIZE) + self.RENDER_DISTANCE, len(tiles))):
+                self.screen.blit(self.textures[tiles[y][x]],((x*self.TILE_SIZE)-self.player_scroll[0],(y*self.TILE_SIZE)-self.player_scroll[1]))
+    def calculate_scroll(self, player):
+        SCREEN_SIZE = self.screen.get_size()
+        self.player_scroll[0] += int((player.pos[0] - self.player_scroll[0] - (SCREEN_SIZE[0]/2))/10)
+        self.player_scroll[1] += int((player.pos[1] - self.player_scroll[1] - (SCREEN_SIZE[1]/2))/10)
+
     def draw_player(self,player):
-        pass
+        
+        self.screen.blit(player.GFX, (player.pos[0] - self.player_scroll[0],  player.pos[1]- self.player_scroll[1]))
     def draw_debug(self, clock:pygame.time.Clock):
         defaultFont = pygame.font.Font(pygame.font.get_default_font(), 25)
 
@@ -34,3 +40,6 @@ class Render:
                 if the_map[y][x] == 0:
                     rect_list.append(pygame.Surface((self.TILE_SIZE, self.TILE_SIZE)).get_rect(topleft=(x*self.TILE_SIZE, y*self.TILE_SIZE)))
         return rect_list
+
+    def _scale(self, image:pygame.Surface):
+        return pygame.transform.scale(image,  (self.TILE_SIZE, self.TILE_SIZE))
