@@ -48,13 +48,13 @@ class Arrow:
 
 
 class Player(Entity):
-    def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int):
+    def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int, the_map):
         graphics = pygame.image.load('assets/player.png').convert_alpha()
         super().__init__(pos, graphics, HP, DF, SP, DMG)
         self.angle = self._get_mouse_angle()
         self.GFX.set_colorkey((0,0,0))
         
-
+        self.the_map = the_map
         
         self.arrows = 5
         self.arrow_speed = 10
@@ -62,6 +62,7 @@ class Player(Entity):
         self.cooldown = 1000
         self.on_cooldown = False
         self.last_shot = pygame.time.get_ticks()
+        self.refill_arrows = 1000 # time between new arrow
 
         self.keys = {pygame.K_UP: 0,
                      pygame.K_DOWN: 0,
@@ -75,6 +76,7 @@ class Player(Entity):
         self._check_inputs()
         self._get_mouse_angle()
 
+        self.get_new_arrow()
         self.shoot()
 
         self.input_movement()
@@ -88,6 +90,10 @@ class Player(Entity):
         angle = math.atan2(vect[1], vect[0])
 
         return angle
+
+    def get_new_arrow(self):
+        if pygame.time.get_ticks() % self.refill_arrows == 0:
+            self.arrows += 1
 
     def shoot(self):
         if pygame.time.get_ticks() - self.last_shot > self.cooldown:
