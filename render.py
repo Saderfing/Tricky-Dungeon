@@ -6,12 +6,14 @@ class Render:
 
         self.TILE_SIZE = 50
         self.FPS = 60
+        self.RENDER_DISTANCE = 15
         self.toggled_fps = True
         self.player_scroll = [0,0]
 
         self.run = True
 
         self.textures = {1:self._scale(pygame.image.load("assets/tiles/wall3.png")).convert(),
+
                          2:self._scale(pygame.image.load("assets/tiles/wall5.png")).convert(),
                          3:self._scale(pygame.image.load("assets/tiles/wall6.png")).convert(),
                          10:self._scale(pygame.image.load("assets/tiles/floor3.png")).convert(),
@@ -23,7 +25,11 @@ class Render:
     def draw_tilemap(self, tiles:list):
         for y in range(len(tiles)):
             for x in range(len(tiles[y])):
-                self.screen.blit(self.textures[tiles[y][x]],((x*self.TILE_SIZE)-self.player_scroll[0],(y*self.TILE_SIZE)-self.player_scroll[1]))
+
+                self._scale(pygame.image.load("assets/tiles/floor3.png")).convert()
+
+        
+        self.screen.blit(self.textures[tiles[y][x]],((x*self.TILE_SIZE)-self.player_scroll[0],(y*self.TILE_SIZE)-self.player_scroll[1]))
     def calculate_scroll(self, player):
         SCREEN_SIZE = self.screen.get_size()
         self.player_scroll[0] += int((player.pos[0] - self.player_scroll[0] - (SCREEN_SIZE[0]/2))/10)
@@ -44,3 +50,8 @@ class Render:
                 if the_map[y][x] < 10:
                     rect_list.append(pygame.Surface((self.TILE_SIZE, self.TILE_SIZE)).get_rect(topleft=(x*self.TILE_SIZE, y*self.TILE_SIZE)))
         return rect_list
+
+
+    def _scale(self, image:pygame.Surface):
+        return pygame.transform.scale(image,  (self.TILE_SIZE, self.TILE_SIZE))
+
