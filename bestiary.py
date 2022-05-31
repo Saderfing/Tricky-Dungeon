@@ -7,17 +7,17 @@ class Goblin(Entity):
         self.GFX = pygame.Surface((16,16))
         self.GFX.fill((125,0,0))
         self.sight_distance = 200
-        
+
         super().__init__(pos, self.GFX, HP, DF, SP, DMG)
-    
+
     def update(self, rect_list):
         self.pathfind(pygame.mouse.get_pos())
         self.collide(rect_list)
         #self.attack()
-        
+
         self.apply_movement()
     def pathfind(self, pos:list):
-        
+
         local_pos = Vec2(pos[0] - self.pos[0], pos[1] - self.pos[1])
         direction = local_pos.normalized()
 
@@ -25,19 +25,19 @@ class Goblin(Entity):
             self.velocity = [direction.x * self.speed, direction.y * self.speed]
         else:
             self.velocity = [0,0]
-        
+
     def collide(self,rect_list:list):
         for rect in rect_list:
             if rect.colliderect(self.rect):
                 self.GFX.fill((0,150,0))
             self.GFX.fill((125,0,0))
-        
+
     def apply_movement(self):
         self.pos[0] += self.velocity[0]
         self.pos[1] += self.velocity[1]
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
-    
+
     def attack(self, player):
         if self.rect.colliderect(player.rect):
             print("toucher le joueur")
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         goblintest.update([test_collision_rect])
         screen.blit(test_collision, test_collision_rect)
         screen.blit(goblintest.GFX, goblintest.pos)
-        
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
