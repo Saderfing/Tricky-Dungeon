@@ -25,11 +25,7 @@ class Render:
     def draw_tilemap(self, tiles:list):
         for y in range(len(tiles)):
             for x in range(len(tiles[y])):
-
-                self._scale(pygame.image.load("assets/tiles/floor3.png")).convert()
-
-        
-        self.screen.blit(self.textures[tiles[y][x]],((x*self.TILE_SIZE)-self.player_scroll[0],(y*self.TILE_SIZE)-self.player_scroll[1]))
+                self.screen.blit(self.textures[tiles[y][x]],((x*self.TILE_SIZE)-self.player_scroll[0],(y*self.TILE_SIZE)-self.player_scroll[1]))
     def calculate_scroll(self, player):
         SCREEN_SIZE = self.screen.get_size()
         self.player_scroll[0] += int((player.pos[0] - self.player_scroll[0] - (SCREEN_SIZE[0]/2))/10)
