@@ -22,7 +22,7 @@ while renderer.run:
     renderer.calculate_scroll(player)
 
     renderer.screen.fill((33, 38, 63))
-    renderer.draw_tilemap(gen.the_map, player)
+    renderer.draw_tilemap(gen.the_map)
     renderer.draw_debug(clock)
     renderer.draw_player(player)
     for i in player.shot_arrows:

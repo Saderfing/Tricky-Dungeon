@@ -38,9 +38,24 @@ class Generator:
 
         self.roomManager = RoomManager(5)
         self.rect_list = []
-    
+    def _random_wall(self):
+        random = rand.random() 
+        if 0 < random < 0.01:
+            return 2
+        elif 0.01 < random < 0.02:
+            return 3
+        return 1
+    def _random_floor(self):
+        random = rand.random()
+        if 0 < random < 0.01:
+            return 11
+        elif 0.01 < random < 0.02:
+            return 12
+        elif 0.03 < random < 0.05:
+            return 13
+        return 10
     def create_empty_map(self):
-        self.the_map = [[1 for x in range(self.map_size[0])] for y in range(self.map_size[1])]
+        self.the_map = [[self._random_wall() for x in range(self.map_size[0])] for y in range(self.map_size[1])]
     
     def place_room(self, room_type_list:list):
         
@@ -69,7 +84,7 @@ class Generator:
         
         for y in range(new_room.topleft[1], new_room.downright[1]):
             for x in range(new_room.topleft[0], new_room.downright[0]):
-                self.the_map[y][x] = 0
+                self.the_map[y][x] = self._random_floor()
     
     def place_chest_room(self):
         
@@ -94,7 +109,7 @@ class Generator:
         
         for y in range(new_room.topleft[1], new_room.downright[1]):
             for x in range(new_room.topleft[0], new_room.downright[0]):
-                self.the_map[y][x] = 0
+                self.the_map[y][x] = self._random_floor()
     
     def place_entrance(self):
         random_pos_x = rand.randint(1,self.map_size[0]-1-self.roomManager.entrance_room[0][0])
@@ -105,7 +120,7 @@ class Generator:
 
         for y in range(new_entrance.topleft[1], new_entrance.downright[1]):
             for x in range(new_entrance.topleft[0], new_entrance.downright[0]):
-                self.the_map[y][x] = 0
+                self.the_map[y][x] = self._random_floor()
 
 
     def make_corridor(self, pointA:list, pointB:list):
@@ -118,11 +133,11 @@ class Generator:
 
         for y in range(min(pointA[1], corner_pos[1]), max(pointA[1], corner_pos[1]+width)):
             for x in range(min(pointA[0], corner_pos[0]), max(pointA[0], corner_pos[0])+width):
-                self.the_map[y][x] = 0
+                self.the_map[y][x] = self._random_floor()
 
         for y in range(min(pointB[1], corner_pos[1]), max(pointB[1], corner_pos[1]+width)):
             for x in range(min(pointB[0], corner_pos[0]), max(pointB[0], corner_pos[0])+width):
-                self.the_map[y][x] = 0
+                self.the_map[y][x] = self._random_floor()
     
     def generate(self):
         self.__init__(self.map_size)

@@ -80,7 +80,7 @@ class Player(Entity):
         self.shoot()
 
         self.input_movement()
-        
+
         self.apply_movement()
 
     def _get_mouse_angle(self):
@@ -88,7 +88,7 @@ class Player(Entity):
         vect = [point[0] - self.pos[0], point[1] - self.pos[1]]
 
         angle = math.atan2(vect[1], vect[0])
-
+        #self.GFX = pygame.transform.rotate(self.GFX, self.angle)
         return angle
 
     def get_new_arrow(self):
@@ -111,11 +111,11 @@ class Player(Entity):
     def arrow_manager(self):
         for arrow in self.shot_arrows:
             arrow.update()
-    
+
     def input_movement(self):
         self.velocity[0] = (self.keys[pygame.K_RIGHT] - self.keys[pygame.K_LEFT]) * self.speed
         self.velocity[1] = (self.keys[pygame.K_DOWN] - self.keys[pygame.K_UP]) * self.speed
-        
+
     def _check_inputs(self):
         self.angle = self._get_mouse_angle()
         key_inputs = pygame.key.get_pressed()
@@ -154,5 +154,3 @@ if __name__ == '__main__':
                 exit()
 
         pygame.display.update()
-
-
