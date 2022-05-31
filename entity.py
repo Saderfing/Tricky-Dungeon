@@ -34,9 +34,9 @@ class Arrow:
         self.damage = damage
         self.velocity = [math.cos(self.angle) * self.speed, math.sin(self.angle) * self.speed]
 
-        GFX = pygame.image.load('assets/arrow.png').convert_alpha()
-        self.GFX = pygame.transform.rotate(GFX, self.angle)
-        self.rect = GFX.get_rect()
+        self.GFX = pygame.image.load('assets/arrow.png').convert_alpha()
+
+        self.rect = self.GFX.get_rect()
         self.width = self.GFX.get_width()
         self.height = self.GFX.get_height()
         self.center = (self.width + self.height)//2
@@ -48,14 +48,13 @@ class Arrow:
 
 
 class Player(Entity):
-    def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int, the_map):
+    def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int):
         graphics = pygame.image.load('assets/player.png').convert_alpha()
         super().__init__(pos, graphics, HP, DF, SP, DMG)
         self.angle = self._get_mouse_angle()
-        self.blit_pos = [0, 0]
         self.GFX.set_colorkey((0,0,0))
         
-        self.the_map = the_map
+
         
         self.arrows = 5
         self.arrow_speed = 10
@@ -79,7 +78,6 @@ class Player(Entity):
         self.shoot()
 
         self.input_movement()
-        self._check_collision()
         
         self.apply_movement()
 
@@ -88,7 +86,7 @@ class Player(Entity):
         vect = [point[0] - self.pos[0], point[1] - self.pos[1]]
 
         angle = math.atan2(vect[1], vect[0])
-        #self.GFX = pygame.transform.rotate(self.GFX, self.angle)
+
         return angle
 
     def shoot(self):
@@ -107,15 +105,6 @@ class Player(Entity):
     def arrow_manager(self):
         for arrow in self.shot_arrows:
             arrow.update()
-
-    def _check_collision(self):
-        for rect in self.the_map:
-            #check for collision in x direction
-            if not rect.colliderect(self.velocity[0] + self.pos[0], self.pos[1], self.width, self.height):
-                self.velocity[0] = 0
-            #check for collision in y direction
-            if not rect.colliderect(self.pos[0], self.velocity[1] - self.pos[1], self.width, self.height):
-                self.velocity[1] = 0
     
     def input_movement(self):
         self.velocity[0] = (self.keys[pygame.K_RIGHT] - self.keys[pygame.K_LEFT]) * self.speed
@@ -149,7 +138,7 @@ if __name__ == '__main__':
 
         win.fill((0,0,0))
         player.update()
-        win.blit(player.GFX, player.blit_pos)
+        win.blit(player.GFX, player.pos)
         for arrow in player.shot_arrows:
             win.blit(arrow.GFX, arrow.pos)
 
