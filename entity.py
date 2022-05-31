@@ -2,6 +2,7 @@ import uuid
 import pygame
 from random import randint
 import math
+from utilities import Vec2
 
 class Entity:
     def __init__(self, pos:list, GFX,HP:int, DF:int, SP:int, DMG:int):
@@ -35,7 +36,7 @@ class Arrow:
         self.velocity = [math.cos(self.angle) * self.speed, math.sin(self.angle) * self.speed]
 
         self.GFX = pygame.image.load('assets/arrow.png').convert_alpha()
-
+        print(self.angle)
         self.rect = self.GFX.get_rect()
         self.width = self.GFX.get_width()
         self.height = self.GFX.get_height()
@@ -75,8 +76,8 @@ class Player(Entity):
     def update(self):
         self._check_inputs()
         self._get_mouse_angle()
-
-        self.get_new_arrow()
+        
+        self.reload_arrow()
         self.shoot()
 
         self.input_movement()
@@ -85,14 +86,16 @@ class Player(Entity):
 
     def _get_mouse_angle(self):
         point = pygame.mouse.get_pos()
-        vect = [point[0] - self.pos[0], point[1] - self.pos[1]]
-
-        angle = math.atan2(vect[1], vect[0])
+        vect = Vec2(point[0] - self.pos[0], point[1] - self.pos[1])
+        vect = vect.normalized()
+        angle = math.atan2(vect.y, vect.x)
+        
         #self.GFX = pygame.transform.rotate(self.GFX, self.angle)
         return angle
 
-    def get_new_arrow(self):
+    def reload_arrow(self):
         if pygame.time.get_ticks() % self.refill_arrows == 0:
+
             self.arrows += 1
 
     def shoot(self):
@@ -128,14 +131,16 @@ class Player(Entity):
     def apply_movement(self):
         self.pos[0] += self.velocity[0]
         self.pos[1] += self.velocity[1]
-
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+        
 if __name__ == '__main__':
     #pygame.init()
 
     WIDTH = 800
     HEIGHT = 400
     win = pygame.display.set_mode((WIDTH, HEIGHT))
-    player = Player([0, 0], 100, 50, 10, 10)
+    player = Player([0, 0], 100, 50, 10, 10, [])
 
     clock = pygame.time.Clock()
     FPS = 60

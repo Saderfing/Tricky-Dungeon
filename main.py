@@ -20,9 +20,9 @@ clock = pygame.time.Clock()
 while renderer.run:
     player.update()
     renderer.calculate_scroll(player)
-
+    print(pygame.mouse.get_pos())
     renderer.screen.fill((33, 38, 63))
-    renderer.draw_tilemap(gen.the_map)
+    renderer.draw_tilemap(gen.the_map, player)
     renderer.draw_debug(clock)
     renderer.draw_player(player)
     for i in player.shot_arrows:
