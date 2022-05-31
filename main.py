@@ -13,7 +13,7 @@ renderer = render.Render(screen)
 gen = generation.Generator([120,120])
 gen.generate()
 
-player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ], 100, 5, 4, 10)
+player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ], 100, 5, 4, 10,  renderer.get_rect_list(gen.the_map))
 
 clock = pygame.time.Clock()
 
@@ -25,7 +25,8 @@ while renderer.run:
     renderer.draw_tilemap(gen.the_map, player)
     renderer.draw_debug(clock)
     renderer.draw_player(player)
-
+    for i in player.shot_arrows:
+        renderer.draw_object(i)
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

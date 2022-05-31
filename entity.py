@@ -48,13 +48,14 @@ class Arrow:
 
 
 class Player(Entity):
-    def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int):
+    def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int, the_map):
         graphics = pygame.image.load('assets/player.png').convert_alpha()
         super().__init__(pos, graphics, HP, DF, SP, DMG)
         self.angle = self._get_mouse_angle()
         self.blit_pos = [0, 0]
-        self.GFX.set_colorkey((0,0,0)).convert_alpha()
+        self.GFX.set_colorkey((0,0,0))
         
+        self.the_map = the_map
         
         self.arrows = 5
         self.arrow_speed = 10
@@ -78,6 +79,8 @@ class Player(Entity):
         self.shoot()
 
         self.input_movement()
+        self._check_collision()
+        
         self.apply_movement()
 
     def _get_mouse_angle(self):
@@ -85,7 +88,7 @@ class Player(Entity):
         vect = [point[0] - self.pos[0], point[1] - self.pos[1]]
 
         angle = math.atan2(vect[1], vect[0])
-        self.GFX = pygame.transform.rotate(self.GFX, self.angle)
+        #self.GFX = pygame.transform.rotate(self.GFX, self.angle)
         return angle
 
     def shoot(self):
@@ -105,10 +108,19 @@ class Player(Entity):
         for arrow in self.shot_arrows:
             arrow.update()
 
+    def _check_collision(self):
+        for rect in self.the_map:
+            #check for collision in x direction
+            if not rect.colliderect(self.velocity[0] + self.pos[0], self.pos[1], self.width, self.height):
+                self.velocity[0] = 0
+            #check for collision in y direction
+            if not rect.colliderect(self.pos[0], self.velocity[1] - self.pos[1], self.width, self.height):
+                self.velocity[1] = 0
+    
     def input_movement(self):
         self.velocity[0] = (self.keys[pygame.K_RIGHT] - self.keys[pygame.K_LEFT]) * self.speed
         self.velocity[1] = (self.keys[pygame.K_DOWN] - self.keys[pygame.K_UP]) * self.speed
-
+        
     def _check_inputs(self):
         self.angle = self._get_mouse_angle()
         key_inputs = pygame.key.get_pressed()
