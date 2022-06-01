@@ -26,6 +26,7 @@ class Render:
         for y in range(max(int(player.pos[1]/self.TILE_SIZE) - self.RENDER_DISTANCE,  0), min(int(player.pos[1]/self.TILE_SIZE) + self.RENDER_DISTANCE, len(tiles))):
             for x in range(max(int(player.pos[0]/self.TILE_SIZE) - self.RENDER_DISTANCE,  0), min(int(player.pos[0]/self.TILE_SIZE) + self.RENDER_DISTANCE, len(tiles))):
                 self.screen.blit(self.textures[tiles[y][x]],((x*self.TILE_SIZE)-self.player_scroll[0],(y*self.TILE_SIZE)-self.player_scroll[1]))
+    
     def calculate_scroll(self, player):
         SCREEN_SIZE = self.screen.get_size()
         self.player_scroll[0] += int((player.pos[0] - self.player_scroll[0] - (SCREEN_SIZE[0]/2))/10)

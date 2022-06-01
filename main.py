@@ -1,3 +1,4 @@
+from matplotlib.widgets import Widget
 import pygame, sys
 import render
 import generation
@@ -5,12 +6,15 @@ from entity import Player
 
 pygame.init()
 
-screen_size = (1280,720) #
+HEIGHT = 720
+WIDTH = 1280
+
+screen_size = (WIDTH, HEIGHT) #
 screen = pygame.display.set_mode(screen_size)
 renderer = render.Render(screen)
 
 
-gen = generation.Generator([120,120])
+gen = generation.Generator([120, 120])
 gen.generate()
 
 player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ], 100, 5, 4, 10,  renderer.get_rect_list(gen.the_map))
@@ -18,9 +22,9 @@ player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].
 clock = pygame.time.Clock()
 
 while renderer.run:
-    player.update()
+    player.update([WIDTH, HEIGHT])
     renderer.calculate_scroll(player)
-    print(pygame.mouse.get_pos())
+    
     renderer.screen.fill((33, 38, 63))
     renderer.draw_tilemap(gen.the_map, player)
     renderer.draw_debug(clock)
@@ -40,4 +44,3 @@ while renderer.run:
     
     clock.tick(renderer.FPS)
     
-

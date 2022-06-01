@@ -36,7 +36,7 @@ class Arrow:
         self.velocity = [math.cos(self.angle) * self.speed, math.sin(self.angle) * self.speed]
 
         self.GFX = pygame.image.load('assets/arrow.png').convert_alpha()
-        print(self.angle)
+
         self.rect = self.GFX.get_rect()
         self.width = self.GFX.get_width()
         self.height = self.GFX.get_height()
@@ -52,7 +52,7 @@ class Player(Entity):
     def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int, the_map):
         graphics = pygame.image.load('assets/player.png').convert_alpha()
         super().__init__(pos, graphics, HP, DF, SP, DMG)
-        self.angle = self._get_mouse_angle()
+        self.angle = self._get_mouse_angle([1280, 720])
         self.GFX.set_colorkey((0,0,0))
         
         self.the_map = the_map
@@ -69,32 +69,35 @@ class Player(Entity):
                      pygame.K_DOWN: 0,
                      pygame.K_RIGHT: 0,
                      pygame.K_LEFT: 0,
-                     pygame.K_SPACE:0}
-
+                     pygame.K_SPACE: 0}
         self.mouse = [0, 0, 0]
 
-    def update(self):
+    def update(self, screen_size):
         self._check_inputs()
-        self._get_mouse_angle()
+        self._get_mouse_angle(screen_size)
         
         self.reload_arrow()
         self.shoot()
 
         self.input_movement()
 
+        self._check_collision()
+        
         self.apply_movement()
 
-    def _get_mouse_angle(self):
+    def _get_mouse_angle(self, screen_size):
         point = pygame.mouse.get_pos()
-        vect = Vec2(point[0] - self.pos[0], point[1] - self.pos[1])
+        mid = [screen_size[0]//2, screen_size[1]//2]
+
+        vect = Vec2(point[0] - mid[0], point[1] - mid[1])
         vect = vect.normalized()
         angle = math.atan2(vect.y, vect.x)
         
         #self.GFX = pygame.transform.rotate(self.GFX, self.angle)
-        return angle
+        self.angle = angle
 
     def reload_arrow(self):
-        if pygame.time.get_ticks() % self.refill_arrows == 0:
+        if (pygame.time.get_ticks() - self.refill_arrows ) % self.refill_arrows == 0:
 
             self.arrows += 1
 
@@ -119,8 +122,14 @@ class Player(Entity):
         self.velocity[0] = (self.keys[pygame.K_RIGHT] - self.keys[pygame.K_LEFT]) * self.speed
         self.velocity[1] = (self.keys[pygame.K_DOWN] - self.keys[pygame.K_UP]) * self.speed
 
+    def _check_collision(self):
+        for rect in self.the_map:
+            if rect.colliderect(self.pos[0] + self.velocity[0], self.pos[1], self.width, self.height):
+                self.velocity[0] = 0
+            if rect.colliderect(self.pos[0], self.pos[1]  + self.velocity[1], self.width, self.height):
+                self.velocity[1] = 0
+
     def _check_inputs(self):
-        self.angle = self._get_mouse_angle()
         key_inputs = pygame.key.get_pressed()
         mouse_inputs = pygame.mouse.get_pressed()
         for key in self.keys.keys():
@@ -148,7 +157,7 @@ if __name__ == '__main__':
         clock.tick(FPS)
 
         win.fill((0,0,0))
-        player.update()
+        player.update([WIDTH, HEIGHT])
         win.blit(player.GFX, player.pos)
         for arrow in player.shot_arrows:
             win.blit(arrow.GFX, arrow.pos)
