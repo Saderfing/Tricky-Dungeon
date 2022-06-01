@@ -5,7 +5,7 @@ import math
 from utilities import Vec2
 
 class Entity:
-    def __init__(self, pos:list, GFX,HP:int, DF:int, SP:int, DMG:int):
+    def __init__(self, pos:list, GFX, HP:int, DF:int, SP:int, DMG:int):
         self.uuid = uuid.uuid1()
         self.pos = pos
         self.GFX = GFX
@@ -26,6 +26,10 @@ class Entity:
 
         self.velocity = [0, 0] # 2 integers to represent the x and y velocity
 
+    def damage(self, damage):
+        damage = damage - self.defence
+        self.health -= damage
+    
 class Arrow:
     def __init__(self, pos:list, angle:int, damage:int, speed:int) -> None:
         self.pos = pos
@@ -47,12 +51,11 @@ class Arrow:
         self.pos[0] += self.velocity[0]
         self.pos[1] += self.velocity[1]
 
-
 class Player(Entity):
     def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int, the_map):
         graphics = pygame.image.load('assets/player.png').convert_alpha()
         super().__init__(pos, graphics, HP, DF, SP, DMG)
-        self.angle = self._get_mouse_angle([1280, 720])
+        self.angle = self._get_mouse_angle([1280, 720], [0,0])
         self.GFX.set_colorkey((0,0,0))
         
         self.the_map = the_map
@@ -72,9 +75,9 @@ class Player(Entity):
                      pygame.K_SPACE: 0}
         self.mouse = [0, 0, 0]
 
-    def update(self, screen_size):
+    def update(self, screen_size, player_scroll):
         self._check_inputs()
-        self._get_mouse_angle(screen_size)
+        self._get_mouse_angle(screen_size, player_scroll)
         
         self.reload_arrow()
         self.shoot()
@@ -85,7 +88,7 @@ class Player(Entity):
         
         self.apply_movement()
 
-    def _get_mouse_angle(self, screen_size):
+    def _get_mouse_angle(self, screen_size, player_scroll):
         point = pygame.mouse.get_pos()
         mid = [screen_size[0]//2, screen_size[1]//2]
 
@@ -157,7 +160,7 @@ if __name__ == '__main__':
         clock.tick(FPS)
 
         win.fill((0,0,0))
-        player.update([WIDTH, HEIGHT])
+        player.update([WIDTH, HEIGHT], [])
         win.blit(player.GFX, player.pos)
         for arrow in player.shot_arrows:
             win.blit(arrow.GFX, arrow.pos)
