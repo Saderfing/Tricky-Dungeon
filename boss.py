@@ -1,9 +1,9 @@
 from entity import Entity, Player
 import pygame
 
-class Angelrute(Entity):
+class Schwamm(Entity):
     def __init__(self, pos:list) -> None:
-        GFX = pygame.image.load('assets/angelrute.png').convert_alpha()
+        GFX = pygame.image.load('assets/Schwamm.png').convert_alpha()
         HP, DF, SP, DMG = 1000, 50, 10, 100
         
         super().__init__(pos, GFX, HP, DF, SP, DMG)
@@ -13,7 +13,13 @@ class Angelrute(Entity):
     def update(self):
         pass
     
-
+    def pathfinding(self):
+        pass
+    
+    def water_splash(self):
+        pass
+    
+    
 if __name__ == '__main__':
     #pygame.init()
 
@@ -21,7 +27,7 @@ if __name__ == '__main__':
     HEIGHT = 400
     win = pygame.display.set_mode((WIDTH, HEIGHT))
     player = Player([0, 0], 100, 50, 10, 10, [])
-    boss = Angelrute([0,0])
+    boss = Schwamm([0,0])
 
     clock = pygame.time.Clock()
     FPS = 60

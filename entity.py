@@ -55,7 +55,7 @@ class Player(Entity):
     def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int, the_map):
         graphics = pygame.image.load('assets/player.png').convert_alpha()
         super().__init__(pos, graphics, HP, DF, SP, DMG)
-        self.angle = self._get_mouse_angle([1280, 720], [0,0])
+        self.angle = self._get_mouse_angle([1280, 720])
         self.GFX.set_colorkey((0,0,0))
         
         self.the_map = the_map
@@ -75,9 +75,9 @@ class Player(Entity):
                      pygame.K_SPACE: 0}
         self.mouse = [0, 0, 0]
 
-    def update(self, screen_size, player_scroll):
+    def update(self, screen_size):
         self._check_inputs()
-        self._get_mouse_angle(screen_size, player_scroll)
+        self._get_mouse_angle(screen_size)
         
         self.reload_arrow()
         self.shoot()
@@ -88,7 +88,7 @@ class Player(Entity):
         
         self.apply_movement()
 
-    def _get_mouse_angle(self, screen_size, player_scroll):
+    def _get_mouse_angle(self, screen_size):
         point = pygame.mouse.get_pos()
         mid = [screen_size[0]//2, screen_size[1]//2]
 
@@ -160,7 +160,7 @@ if __name__ == '__main__':
         clock.tick(FPS)
 
         win.fill((0,0,0))
-        player.update([WIDTH, HEIGHT], [])
+        player.update([WIDTH, HEIGHT])
         win.blit(player.GFX, player.pos)
         for arrow in player.shot_arrows:
             win.blit(arrow.GFX, arrow.pos)
