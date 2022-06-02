@@ -1,6 +1,7 @@
-from entity import Entity, Player
+from entity import Entity, Player, Projectil
 import pygame
 from random import randint
+import math
 
 class Livid(Entity):
     def __init__(self, pos:list) -> None:
@@ -12,14 +13,28 @@ class Livid(Entity):
         self.phases = {0:self.shadow_dupes}
         self.current_phase = 0
         self.shadows = []
+        self.daggers = []
+        self.daggers_angle = math.pi/6
         
     def update(self):
-        pass
+        self.shadow_daggers()
+        self._child_manager()
     
     def pathfinding(self):
         pass
     
     def shadow_daggers(self):
+        for i in range(6):
+            self.daggers.append(Projectil(self.pos.copy(), i*self.daggers_angle, 10, 10, 'assets/shadow_daggers.png'))
+    
+    def _child_manager(self):
+        for dagger in self.daggers:
+            dagger.update()
+            
+        for shadow in self.shadows:
+            shadow.update()
+    
+    def dash(self):
         pass
     
     def shadow_dupes(self):
@@ -29,6 +44,7 @@ class Livid(Entity):
 class Shadows(Livid):
     def __init__(self, pos: list) -> None:
         super().__init__(pos)
+
 
     
 if __name__ == '__main__':
@@ -54,6 +70,8 @@ if __name__ == '__main__':
             win.blit(arrow.GFX, arrow.pos)
         for shadow in boss.shadows:
             win.blit(shadow.GFX, shadow.pos)
+        for projectil in boss.daggers:
+            win.blit(projectil.GFX, projectil.pos)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

@@ -13,11 +13,10 @@ screen_size = (WIDTH, HEIGHT) #
 screen = pygame.display.set_mode(screen_size)
 renderer = render.Render(screen)
 
-
 gen = generation.Generator([120, 120])
 gen.generate()
 
-player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ], 100, 5, 4, 10,  renderer.get_rect_list(gen.the_map))
+player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ], 100, 10, 4, 10,  renderer.get_rect_list(gen.the_map))
 
 clock = pygame.time.Clock()
 
