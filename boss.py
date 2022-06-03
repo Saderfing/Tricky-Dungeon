@@ -10,22 +10,33 @@ class Livid(Entity):
         
         super().__init__(pos, GFX, HP, DF, SP, DMG)
         
-        self.phases = {0:self.shadow_dupes}
+        self.phases = {0:self._shadow_dupes, 1:self._shadow_daggers, 2:self._child_manager}
         self.current_phase = 0
+        self.new_phase = 100
+        
         self.shadows = []
         self.daggers = []
         self.daggers_angle = math.pi/6
         
+        
+        
     def update(self):
-        self.shadow_daggers()
-        self._child_manager()
+        if pygame.time.get_ticks() % self.new_phase == 0:
+            self.current_phase = randint(0,2)
+            print(self.current_phase)
+            self.phases[self.current_phase]()
+            
+        self._child_manager
+        
     
     def pathfinding(self):
         pass
     
-    def shadow_daggers(self):
-        for i in range(6):
-            self.daggers.append(Projectil(self.pos.copy(), i*self.daggers_angle, 10, 10, 'assets/shadow_daggers.png'))
+    def _shadow_daggers(self):
+        if len(self.shadows) > 0:
+            return 
+        for i in range(12):
+            self.daggers.append(Projectil(self.pos.copy(), i*self.daggers_angle, 10, 10, 'assets/shadow_daggers.png', 100))
     
     def _child_manager(self):
         for dagger in self.daggers:
@@ -37,9 +48,9 @@ class Livid(Entity):
     def dash(self):
         pass
     
-    def shadow_dupes(self):
+    def _shadow_dupes(self):
         for i in range(4):
-            self.shadows.append(Shadows((self.pos[0] + randint(-10, 10), self.pos[1] + randint(-10, 10))))
+            self.shadows.append(Shadows([self.pos[0] + randint(-10, 10), self.pos[1] + randint(-10, 10)]))
     
 class Shadows(Livid):
     def __init__(self, pos: list) -> None:
@@ -54,7 +65,7 @@ if __name__ == '__main__':
     HEIGHT = 400
     win = pygame.display.set_mode((WIDTH, HEIGHT))
     player = Player([0, 0], 100, 50, 10, 10, [])
-    boss = Livid([WIDTH//2,HEIGHT//2])
+    boss = Livid([WIDTH//2, HEIGHT//2])
 
     clock = pygame.time.Clock()
     FPS = 60
