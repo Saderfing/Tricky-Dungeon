@@ -29,6 +29,8 @@ class RoomManager:
         self.chest_room = [[5,4], "chest"]
         self.normal_room = [self.small_room, self.medium_room, self.big_room]
 
+        self.num_mob = {"small": 1, "medium": 3, "big": 5, "chest": 0, "boss": 6, "entrance": 0}
+
 class Generator:
     def __init__(self, map_size:list) -> None:
         self.num_room = 1
@@ -63,7 +65,7 @@ class Generator:
         try_place_x = rand.randint(1,self.map_size[0]-1-room_to_place[0][0])
         try_place_y = rand.randint(1,self.map_size[1]-1-room_to_place[0][1])
 
-        new_room = Room(room_to_place[0], [try_place_x, try_place_y] ,0, room_to_place[1])
+        new_room = Room(room_to_place[0], [try_place_x, try_place_y] ,self.roomManager.num_mob[room_to_place[1]], room_to_place[1])
         
         #print("pos x", try_place_x, "pos y", try_place_y)
 

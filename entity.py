@@ -14,6 +14,8 @@ class Entity:
         self.height = self.GFX.get_height()
         self.center = (self.width + self.height)//2
 
+        self.SIMULATION_DISTANCE = 20
+
         self.BASE_HP = 0
         self.BASE_DF = 0
         self.BASE_SP = 0
@@ -35,7 +37,7 @@ class Projectil:
         self.pos = pos
         self.angle = angle
         self.life_time = life_time
-        
+
         self.speed = speed
         self.damage = damage
         self.velocity = [math.cos(self.angle) * self.speed, math.sin(self.angle) * self.speed]
@@ -50,7 +52,7 @@ class Projectil:
     def update(self):
         if self.life_time <= 0:
             return -1
-    
+
         self.pos[0] += self.velocity[0]
         self.pos[1] += self.velocity[1]
         self.life_time -= 1
@@ -58,13 +60,13 @@ class Projectil:
 
 class Player(Entity):
     def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int, the_map):
-        graphics = pygame.image.load('assets/player.png').convert_alpha()
+        graphics = pygame.transform.scale(pygame.image.load('assets/player.png'), (22,22)).convert_alpha()
         super().__init__(pos, graphics, HP, DF, SP, DMG)
         self.angle = self._get_mouse_angle([1280, 720])
         self.GFX.set_colorkey((0,0,0))
-        
+
         self.the_map = the_map
-        
+
         self.arrows = 5
         self.arrow_speed = 10
         self.shot_arrows = []
@@ -83,14 +85,14 @@ class Player(Entity):
     def update(self, screen_size):
         self._check_inputs()
         self._get_mouse_angle(screen_size)
-        
+
         self.reload_arrow()
         self.shoot()
 
         self.input_movement()
 
         self._check_collision()
-        
+
         self.apply_movement()
 
     def _get_mouse_angle(self, screen_size):
@@ -100,7 +102,7 @@ class Player(Entity):
         vect = Vec2(point[0] - mid[0], point[1] - mid[1])
         vect = vect.normalized()
         angle = math.atan2(vect.y, vect.x)
-        
+
         #self.GFX = pygame.transform.rotate(self.GFX, self.angle)
         self.angle = angle
 
@@ -135,11 +137,15 @@ class Player(Entity):
         self.velocity[1] = (self.keys[pygame.K_DOWN] - self.keys[pygame.K_UP]) * self.speed
 
     def _check_collision(self):
-        for rect in self.the_map:
-            if rect.colliderect(self.pos[0] + self.velocity[0], self.pos[1], self.width, self.height):
-                self.velocity[0] = 0
-            if rect.colliderect(self.pos[0], self.pos[1]  + self.velocity[1], self.width, self.height):
-                self.velocity[1] = 0
+        TSIZE = 50
+        for rect_row in range(max(0, int(self.pos[1]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.the_map), int(self.pos[1]/TSIZE) + self.SIMULATION_DISTANCE)):
+            for rect_line in range(max(0, int(self.pos[0]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.the_map[rect_row]), int(self.pos[0]/TSIZE) + self.SIMULATION_DISTANCE)):
+
+                rect = self.the_map[rect_row][rect_line]
+                if rect.colliderect(self.pos[0] + self.velocity[0], self.pos[1], self.width, self.height):
+                    self.velocity[0] = 0
+                if rect.colliderect(self.pos[0], self.pos[1]  + self.velocity[1], self.width, self.height):
+                    self.velocity[1] = 0
 
     def _check_inputs(self):
         key_inputs = pygame.key.get_pressed()
@@ -154,7 +160,7 @@ class Player(Entity):
         self.pos[1] += self.velocity[1]
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
-        
+
 if __name__ == '__main__':
     #pygame.init()
 

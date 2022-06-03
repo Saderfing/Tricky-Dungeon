@@ -6,7 +6,7 @@ class Render:
 
         self.TILE_SIZE = 50
         self.FPS = 60
-        self.RENDER_DISTANCE = 15
+        self.RENDER_DISTANCE = 16
         self.toggled_fps = True
         self.player_scroll = [0,0]
 
@@ -47,9 +47,11 @@ class Render:
         rect_list = []
 
         for y in range(len(the_map)):
+            row = []
             for x in range(len(the_map[y])):
                 if the_map[y][x] < 10:
-                    rect_list.append(pygame.Surface((self.TILE_SIZE, self.TILE_SIZE)).get_rect(topleft=(x*self.TILE_SIZE, y*self.TILE_SIZE)))
+                    row.append(pygame.Surface((self.TILE_SIZE, self.TILE_SIZE)).get_rect(topleft=(x*self.TILE_SIZE, y*self.TILE_SIZE)))
+            rect_list.append(row)
         return rect_list
 
 

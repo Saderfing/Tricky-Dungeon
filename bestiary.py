@@ -3,16 +3,18 @@ import pygame, sys
 from utilities import Vec2
 
 class Goblin(Entity):
-    def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int):
-        self.GFX = pygame.Surface((16,16))
+    def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int, map_rect:list):
+        self.GFX = pygame.Surface((20,20))
         self.GFX.fill((125,0,0))
-        self.sight_distance = 200
+        self.sight_distance = 400
+
+        self.map_rect = map_rect
 
         super().__init__(pos, self.GFX, HP, DF, SP, DMG)
 
-    def update(self, rect_list):
-        self.pathfind(pygame.mouse.get_pos())
-        self.collide(rect_list)
+    def update(self, player):
+        self.pathfind(player.pos)
+        self.collide()
         #self.attack()
 
         self.apply_movement()
@@ -26,11 +28,16 @@ class Goblin(Entity):
         else:
             self.velocity = [0,0]
 
-    def collide(self,rect_list:list):
-        for rect in rect_list:
-            if rect.colliderect(self.rect):
-                self.GFX.fill((0,150,0))
-            self.GFX.fill((125,0,0))
+    def collide(self):
+        TSIZE = 50
+        for rect_row in range(max(0, int(self.pos[1]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.map_rect), int(self.pos[1]/TSIZE) + self.SIMULATION_DISTANCE)):
+            for rect_line in range(max(0, int(self.pos[0]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.map_rect[rect_row]), int(self.pos[0]/TSIZE) + self.SIMULATION_DISTANCE)):
+                
+                rect = self.map_rect[rect_row][rect_line]
+                if rect.colliderect(self.pos[0] + self.velocity[0], self.pos[1], self.width, self.height):
+                    self.velocity[0] = 0
+                if rect.colliderect(self.pos[0], self.pos[1]  + self.velocity[1], self.width, self.height):
+                    self.velocity[1] = 0
 
     def apply_movement(self):
         self.pos[0] += self.velocity[0]
@@ -53,7 +60,7 @@ if __name__ == "__main__":
     run = True
     while run:
         screen.fill((40,40,40))
-        goblintest.update([test_collision_rect])
+        goblintest.update([[test_collision_rect]])
         screen.blit(test_collision, test_collision_rect)
         screen.blit(goblintest.GFX, goblintest.pos)
 
