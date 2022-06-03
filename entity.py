@@ -129,7 +129,6 @@ class Player(Entity):
             state = arrow.update()
             if state == -1:
                 self.shot_arrows.pop(index)
-            print(self.shot_arrows)
 
     def input_movement(self):
         self.velocity[0] = (self.keys[pygame.K_RIGHT] - self.keys[pygame.K_LEFT]) * self.speed
