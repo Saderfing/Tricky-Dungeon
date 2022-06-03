@@ -106,7 +106,7 @@ class Player(Entity):
         #self.GFX = pygame.transform.rotate(self.GFX, self.angle)
         self.angle = angle
 
-     def reload_arrow(self):
+    def reload_arrow(self):
         if pygame.time.get_ticks() % self.refill_arrows == 0:
 
             self.arrows += 1
@@ -138,8 +138,8 @@ class Player(Entity):
 
     def _check_collision(self):
         TSIZE = 50
-        for rect_row in range(max(0, int(self.pos[1]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.the_map), int(self.pos[1]/TSIZE) + self.SIMULATION_DISTANCE)):
-            for rect_line in range(max(0, int(self.pos[0]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.the_map[rect_row]), int(self.pos[0]/TSIZE) + self.SIMULATION_DISTANCE)):
+        for rect_row in range(len(self.the_map)): #max(0, int(self.pos[1]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.the_map), int(self.pos[1]/TSIZE) + self.SIMULATION_DISTANCE)):
+            for rect_line in range(len(self.the_map[rect_row])):#max(0, int(self.pos[0]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.the_map[rect_row]), int(self.pos[0]/TSIZE) + self.SIMULATION_DISTANCE)):
 
                 rect = self.the_map[rect_row][rect_line]
                 if rect.colliderect(self.pos[0] + self.velocity[0], self.pos[1], self.width, self.height):

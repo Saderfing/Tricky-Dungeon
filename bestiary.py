@@ -1,25 +1,28 @@
 from entity import Entity
 import pygame, sys
 from utilities import Vec2
+from random import randint
 
 class Goblin(Entity):
     def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int, map_rect:list):
         self.GFX = pygame.Surface((20,20))
         self.GFX.fill((125,0,0))
         self.sight_distance = 400
-
         self.map_rect = map_rect
 
         super().__init__(pos, self.GFX, HP, DF, SP, DMG)
 
+        self.speed = self.speed * (randint(75,150) / 100)
+
     def update(self, player):
-        self.pathfind(player.pos)
-        self.collide()
+        check_collide = self.pathfind(player.pos)
+        if check_collide:
+            self.collide()
         #self.attack()
 
         self.apply_movement()
     def pathfind(self, pos:list):
-
+        check_collide = True
         local_pos = Vec2(pos[0] - self.pos[0], pos[1] - self.pos[1])
         direction = local_pos.normalized()
 
@@ -27,7 +30,9 @@ class Goblin(Entity):
             self.velocity = [direction.x * self.speed, direction.y * self.speed]
         else:
             self.velocity = [0,0]
-
+            check_collide = False
+        return check_collide
+        
     def collide(self):
         TSIZE = 50
         for rect_row in range(max(0, int(self.pos[1]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.map_rect), int(self.pos[1]/TSIZE) + self.SIMULATION_DISTANCE)):

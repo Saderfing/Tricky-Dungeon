@@ -23,24 +23,25 @@ gameManager = GameManager(gen)
 gameManager.spawn_mob(renderer.get_rect_list(gen.the_map))
 
 player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ], 100, 5, 5, 10,  renderer.get_rect_list(gen.the_map))
-goblin_test = Goblin([gen.room_list[1].center[0]*renderer.TILE_SIZE + randint(0, 100),gen.room_list[1].center[1]*renderer.TILE_SIZE ], 20, 0, 2, 2, renderer.get_rect_list(gen.the_map))
 
 clock = pygame.time.Clock()
 
 while renderer.run:
     player.update([WIDTH, HEIGHT])
-    #gameManager.load_mob(player.pos)
+    gameManager.load_mob(player.pos)
     for mob in gameManager.loaded_mob:
         mob.update(player)
     renderer.calculate_scroll(player)
-
 
     renderer.screen.fill((33, 38, 63))
     renderer.draw_tilemap(gen.the_map, player)
     renderer.draw_debug(clock)
     renderer.draw_player(player)
-    for mob in gameManager.loaded_mob:
-        renderer.draw_object(mob)
+
+    for room in range(len(gameManager.room_mob_list)):
+        for mob in gameManager.room_mob_list[room]:
+            renderer.draw_object(mob)
+    
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

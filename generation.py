@@ -29,7 +29,7 @@ class RoomManager:
         self.chest_room = [[5,4], "chest"]
         self.normal_room = [self.small_room, self.medium_room, self.big_room]
 
-        self.num_mob = {"small": 1, "medium": 3, "big": 5, "chest": 0, "boss": 6, "entrance": 0}
+        self.num_mob = {"small": 2, "medium": 4, "big": 5, "chest": 0, "boss": 6, "entrance": 0}
 
 class Generator:
     def __init__(self, map_size:list) -> None:
