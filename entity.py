@@ -106,8 +106,8 @@ class Player(Entity):
         #self.GFX = pygame.transform.rotate(self.GFX, self.angle)
         self.angle = angle
 
-    def reload_arrow(self):
-        if (pygame.time.get_ticks() - self.refill_arrows ) % self.refill_arrows == 0:
+     def reload_arrow(self):
+        if pygame.time.get_ticks() % self.refill_arrows == 0:
 
             self.arrows += 1
 
