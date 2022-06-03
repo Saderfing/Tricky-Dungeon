@@ -62,7 +62,7 @@ class Player(Entity):
     def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int, the_map):
         graphics = pygame.transform.scale(pygame.image.load('assets/player.png'), (22,22)).convert_alpha()
         super().__init__(pos, graphics, HP, DF, SP, DMG)
-        self.angle = self._get_mouse_angle([1280, 720])
+        self.angle = 0
         self.GFX.set_colorkey((0,0,0))
 
         self.the_map = the_map
@@ -73,7 +73,7 @@ class Player(Entity):
         self.cooldown = 1000
         self.on_cooldown = False
         self.last_shot = pygame.time.get_ticks()
-        self.refill_arrows = 1000 # time between new arrow
+        self.refill_arrows = 100 # time between new arrow
 
         self.keys = {pygame.K_UP: 0,
                      pygame.K_DOWN: 0,
@@ -102,8 +102,7 @@ class Player(Entity):
         vect = Vec2(point[0] - mid[0], point[1] - mid[1])
         vect = vect.normalized()
         angle = math.atan2(vect.y, vect.x)
-
-        #self.GFX = pygame.transform.rotate(self.GFX, self.angle)
+        
         self.angle = angle
 
     def reload_arrow(self):
