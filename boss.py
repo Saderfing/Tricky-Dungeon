@@ -18,12 +18,9 @@ class Livid(Entity):
         self.daggers = []
         self.daggers_angle = math.pi/6
         
-        
-        
     def update(self):
         if pygame.time.get_ticks() % self.new_phase == 0:
             self.current_phase = randint(0,2)
-            print(self.current_phase)
             self.phases[self.current_phase]()
             
         self._child_manager
@@ -33,22 +30,27 @@ class Livid(Entity):
         pass
     
     def _shadow_daggers(self):
-        if len(self.shadows) > 0:
-            return 
         for i in range(12):
-            self.daggers.append(Projectil(self.pos.copy(), i*self.daggers_angle, 10, 10, 'assets/shadow_daggers.png', 100))
+            self.daggers.append(Projectil(self.pos.copy(), i*self.daggers_angle, 10, 10, 'assets/shadow_daggers.png', 50))
     
     def _child_manager(self):
-        for dagger in self.daggers:
-            dagger.update()
-            
-        for shadow in self.shadows:
-            shadow.update()
+        
+        for dagger, index in zip(self.daggers, range(len(self.daggers))):
+            state_dagger = dagger.update()
+            if state_dagger == -1:
+                self.daggers.pop(index)
+        
+        for shadow, index in zip(self.shadows, range(len(self.shadows))):
+            state_shadow = shadow.update()
+            if state_shadow == -1:
+                self.shadows.pop(index)
     
     def dash(self):
         pass
     
     def _shadow_dupes(self):
+        if len(self.shadows) > 0:
+            return 
         for i in range(4):
             self.shadows.append(Shadows([self.pos[0] + randint(-10, 10), self.pos[1] + randint(-10, 10)]))
     
@@ -56,7 +58,8 @@ class Shadows(Livid):
     def __init__(self, pos: list) -> None:
         super().__init__(pos)
 
-
+    def update(self):
+        pass
     
 if __name__ == '__main__':
     #pygame.init()
