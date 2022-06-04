@@ -43,6 +43,7 @@ class Projectil:
         self.velocity = [math.cos(self.angle) * self.speed, math.sin(self.angle) * self.speed]
 
         self.GFX = pygame.image.load(graphics_path).convert_alpha()
+        self.GFX = pygame.transform.rotate(self.GFX, -math.degrees(self.angle))
 
         self.rect = self.GFX.get_rect()
         self.width = self.GFX.get_width()
