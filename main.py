@@ -37,14 +37,15 @@ while renderer.run:
     renderer.draw_tilemap(gen.the_map, player)
     renderer.draw_debug(clock)
     renderer.draw_player(player)
-
+    
     for arrow in player.shot_arrows:
         renderer.draw_object(arrow)
     
     for room in range(len(gameManager.room_mob_list)):
         for mob in gameManager.room_mob_list[room]:
             renderer.draw_object(mob)
-    
+
+    renderer.draw_hud(player, gameManager.loaded_mob)
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

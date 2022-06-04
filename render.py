@@ -20,6 +20,11 @@ class Render:
                          11:self._scale(pygame.image.load("assets/tiles/floor4.png")).convert(),
                          12:self._scale(pygame.image.load("assets/tiles/floor5.png")).convert(),
                          13:self._scale(pygame.image.load("assets/tiles/floor2.png")).convert()}
+        
+        self.arrow_inv = pygame.transform.scale(pygame.image.load("assets/arrow_sideways.png"), (50, 50)).convert_alpha()
+        
+        self.defaultFont = pygame.font.Font(pygame.font.get_default_font(), 25)
+        self.m4f7 = pygame.font.Font("assets/m5x7.ttf", 40)
 
     def draw_tilemap(self, tiles:list, player):
 
@@ -39,9 +44,8 @@ class Render:
         self.screen.blit(obj.GFX, (obj.pos[0] - self.player_scroll[0],  obj.pos[1]- self.player_scroll[1]))
 
     def draw_debug(self, clock:pygame.time.Clock):
-        defaultFont = pygame.font.Font(pygame.font.get_default_font(), 25)
 
-        if self.toggled_fps: self.screen.blit(defaultFont.render(str(round(clock.get_fps())), True, (250,10,10)), (10,10))
+        if self.toggled_fps: self.screen.blit(self.defaultFont.render(str(round(clock.get_fps())), True, (250,10,10)), (10,10))
 
     def get_rect_list(self,the_map:list):
         rect_list = [[None for x in range(len(the_map[y]))] for y in range(len(the_map))]
@@ -55,3 +59,27 @@ class Render:
 
     def _scale(self, image:pygame.Surface):
         return pygame.transform.scale(image,  (self.TILE_SIZE, self.TILE_SIZE))
+    
+    def draw_hud(self, player, loaded_mob:list):
+        self._draw_player_hp(player)
+        self._draw_mob_hp(loaded_mob)
+        self._draw_arrow_amount(player)
+        #self._draw_ability()
+    
+    def _draw_arrow_amount(self, player):
+        surf = self.m4f7.render(f"{player.arrows}", False, (255,255,255))
+        self.screen.blit(self.arrow_inv, (self.screen.get_width() - self.arrow_inv.get_width() - 85, self.screen.get_height() - self.arrow_inv.get_height() -  30))
+        self.screen.blit(surf, (self.screen.get_width() - surf.get_width() - 75, self.screen.get_height() - 55))
+    
+    def _draw_player_hp(self, player):
+        hp_box = pygame.Surface((300, 40))
+        hp_box.fill((169,59, 59))
+        
+        hp = pygame.Surface((int((player.health/player.BASE_HP)* 300), 40))
+        hp.fill((182, 213, 60))
+
+        hp_box.blit(hp, (0,0))
+        self.screen.blit(hp_box, (self.screen.get_width()//2 - hp_box.get_width()//2, self.screen.get_height() - hp_box.get_height() - 30))
+    
+    def _draw_mob_hp(self, loaded_mob):
+        pass

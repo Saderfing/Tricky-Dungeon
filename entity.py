@@ -16,7 +16,7 @@ class Entity:
 
         self.SIMULATION_DISTANCE = 3
 
-        self.BASE_HP = 0
+        self.BASE_HP = HP
         self.BASE_DF = 0
         self.BASE_SP = 0
         self.BASE_DMG = 0
