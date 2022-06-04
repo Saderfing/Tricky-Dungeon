@@ -44,14 +44,12 @@ class Render:
         if self.toggled_fps: self.screen.blit(defaultFont.render(str(round(clock.get_fps())), True, (250,10,10)), (10,10))
 
     def get_rect_list(self,the_map:list):
-        rect_list = []
+        rect_list = [[None for x in range(len(the_map[y]))] for y in range(len(the_map))]
 
         for y in range(len(the_map)):
-            row = []
             for x in range(len(the_map[y])):
                 if the_map[y][x] < 10:
-                    row.append(pygame.Surface((self.TILE_SIZE, self.TILE_SIZE)).get_rect(topleft=(x*self.TILE_SIZE, y*self.TILE_SIZE)))
-            rect_list.append(row)
+                    rect_list[y][x] = pygame.Surface((self.TILE_SIZE, self.TILE_SIZE)).get_rect(topleft=(x*self.TILE_SIZE, y*self.TILE_SIZE))
         return rect_list
 
 

@@ -37,12 +37,14 @@ class Goblin(Entity):
         TSIZE = 50
         for rect_row in range(max(0, int(self.pos[1]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.map_rect), int(self.pos[1]/TSIZE) + self.SIMULATION_DISTANCE)):
             for rect_line in range(max(0, int(self.pos[0]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.map_rect[rect_row]), int(self.pos[0]/TSIZE) + self.SIMULATION_DISTANCE)):
-                
                 rect = self.map_rect[rect_row][rect_line]
-                if rect.colliderect(self.pos[0] + self.velocity[0], self.pos[1], self.width, self.height):
-                    self.velocity[0] = 0
-                if rect.colliderect(self.pos[0], self.pos[1]  + self.velocity[1], self.width, self.height):
-                    self.velocity[1] = 0
+                if rect is None:
+                    pass
+                else:
+                    if rect.colliderect(self.pos[0] + self.velocity[0], self.pos[1], self.width, self.height):
+                        self.velocity[0] = 0
+                    if rect.colliderect(self.pos[0], self.pos[1]  + self.velocity[1], self.width, self.height):
+                        self.velocity[1] = 0
 
     def apply_movement(self):
         self.pos[0] += self.velocity[0]

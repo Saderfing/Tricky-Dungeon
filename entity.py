@@ -14,7 +14,7 @@ class Entity:
         self.height = self.GFX.get_height()
         self.center = (self.width + self.height)//2
 
-        self.SIMULATION_DISTANCE = 20
+        self.SIMULATION_DISTANCE = 3
 
         self.BASE_HP = 0
         self.BASE_DF = 0
@@ -136,14 +136,16 @@ class Player(Entity):
 
     def _check_collision(self):
         TSIZE = 50
-        for rect_row in range(len(self.the_map)): #max(0, int(self.pos[1]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.the_map), int(self.pos[1]/TSIZE) + self.SIMULATION_DISTANCE)):
-            for rect_line in range(len(self.the_map[rect_row])):#max(0, int(self.pos[0]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.the_map[rect_row]), int(self.pos[0]/TSIZE) + self.SIMULATION_DISTANCE)):
-
+        for rect_row in range(max(0, int(self.pos[1]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.the_map), int(self.pos[1]/TSIZE) + self.SIMULATION_DISTANCE)):
+            for rect_line in range(max(0, int(self.pos[0]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.the_map[rect_row]), int(self.pos[0]/TSIZE) + self.SIMULATION_DISTANCE)):
                 rect = self.the_map[rect_row][rect_line]
-                if rect.colliderect(self.pos[0] + self.velocity[0], self.pos[1], self.width, self.height):
-                    self.velocity[0] = 0
-                if rect.colliderect(self.pos[0], self.pos[1]  + self.velocity[1], self.width, self.height):
-                    self.velocity[1] = 0
+                if rect is None:
+                    pass
+                else:
+                    if rect.colliderect(self.pos[0] + self.velocity[0], self.pos[1], self.width, self.height):
+                        self.velocity[0] = 0
+                    if rect.colliderect(self.pos[0], self.pos[1]  + self.velocity[1], self.width, self.height):
+                        self.velocity[1] = 0
 
     def _check_inputs(self):
         key_inputs = pygame.key.get_pressed()
