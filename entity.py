@@ -1,4 +1,3 @@
-import uuid
 import pygame
 from random import randint
 import math
@@ -6,13 +5,15 @@ from utilities import Vec2
 
 class Entity:
     def __init__(self, pos:list, GFX, HP:int, DF:int, SP:int, DMG:int):
-        self.uuid = uuid.uuid1()
         self.pos = pos
         self.GFX = GFX
-        self.rect = GFX.get_rect()
         self.width = self.GFX.get_width()
         self.height = self.GFX.get_height()
+        
         self.center = [self.pos[0] + int(self.width/2), self.pos[1] + int(self.height/2)]
+        
+        rect = self.GFX.get_rect()
+        self.rect = pygame.Rect(rect.x + self.pos[0], rect.y + self.pos[1], self.width*2, self.width*2)
 
         self.SIMULATION_DISTANCE = 3
 
@@ -28,8 +29,8 @@ class Entity:
 
         self.velocity = [0, 0] # 2 integers to represent the x and y velocity
 
-    def damage(self, damage):
-        damage = damage - self.defence
+    def apply_damage(self, damage):
+        damage -= self.defence
         self.health -= damage
 
     def check_HP(self):
@@ -41,29 +42,25 @@ class Projectil:
         self.angle = angle
         self.life_time = life_time
 
-        self.speed = 1
-        self.damage = damage
+        self.speed = speed
+        self.DMG = damage
         self.velocity = [math.cos(self.angle) * self.speed, math.sin(self.angle) * self.speed]
 
         self.GFX = pygame.image.load(graphics_path).convert_alpha()
         self.GFX = pygame.transform.rotate(self.GFX, -math.degrees(self.angle))
-
-        self.rect = self.GFX.get_rect()
         self.width = self.GFX.get_width()
         self.height = self.GFX.get_height()
-        self.center = (self.width + self.height)//2
 
+        self.rect = self.GFX.get_rect(topleft=self.pos, width=self.width, height=self.height)
+        
     def update(self, targets:list):
+        self.attack(targets)
         if self.life_time <= 0:
             return -1
 
-        self.pos[0] += self.velocity[0]
-        self.pos[1] += self.velocity[1]
         self.life_time -= 1
         
-       
         
-        self.attack(targets)
 
         self.apply_movement()
         
@@ -83,16 +80,15 @@ class Projectil:
     def apply_movement(self):
         self.pos[0] += self.velocity[0]
         self.pos[1] += self.velocity[1]
-        self.rect.x += self.velocity[0]
-        self.rect.y += self.velocity[1]
+        self.rect.x = self.pos[0]
+        self.rect.y = self.pos[1]
 
     def attack(self, targets:list):
-        for target in targets:
-            
-            if target.rect.colliderect(self.rect):
-                
-                target.damage(self.dmg)
-              
+        for target in targets: 
+            if self.rect.colliderect(target.rect):
+                target.apply_damage(self.DMG)
+                self.life_time = 0
+                            
 class Player(Entity):
     def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int, the_map):
         graphics = pygame.transform.scale(pygame.image.load('assets/player.png'), (22,22)).convert_alpha()
@@ -105,7 +101,7 @@ class Player(Entity):
         self.arrows = 5
         self.arrow_speed = 10
         self.shot_arrows = []
-        self.cooldown = 100
+        self.cooldown = 350
         self.on_cooldown = False
         self.last_shot = pygame.time.get_ticks()
         self.refill_arrows = 100 # time between new arrow
@@ -152,7 +148,7 @@ class Player(Entity):
             self.on_cooldown = False
 
         if self.mouse[0] and self.arrows > 0 and not self.on_cooldown:
-            self.shot_arrows.append(Projectil(self.pos.copy(), self.angle, self.damage, self.arrow_speed, 'assets/arrow.png', 100))
+            self.shot_arrows.append(Projectil(self.pos.copy(), self.angle, self.dmg, self.arrow_speed, 'assets/arrow.png', 100))
             self.on_cooldown = True
             self.last_shot = pygame.time.get_ticks()
             self.arrows -= 1
@@ -194,29 +190,3 @@ class Player(Entity):
         self.pos[1] += self.velocity[1]
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
-
-if __name__ == '__main__':
-    #pygame.init()
-
-    WIDTH = 800
-    HEIGHT = 400
-    win = pygame.display.set_mode((WIDTH, HEIGHT))
-    player = Player([0, 0], 100, 50, 10, 10, [])
-
-    clock = pygame.time.Clock()
-    FPS = 60
-    while True:
-        clock.tick(FPS)
-
-        win.fill((0,0,0))
-        player.update([WIDTH, HEIGHT])
-        win.blit(player.GFX, player.pos)
-        for arrow in player.shot_arrows:
-            win.blit(arrow.GFX, arrow.pos)
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
-
-        pygame.display.update()

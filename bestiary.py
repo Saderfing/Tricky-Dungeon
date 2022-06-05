@@ -51,8 +51,8 @@ class Goblin(Entity):
     def apply_movement(self):
         self.pos[0] += self.velocity[0]
         self.pos[1] += self.velocity[1]
-        self.rect.x += self.velocity[0]
-        self.rect.y += self.velocity[1]
+        self.rect.x = self.pos[0]
+        self.rect.y = self.pos[1]
 
         self.center = [self.pos[0] + int(self.width/2), self.pos[1] + int(self.height/2)]
 

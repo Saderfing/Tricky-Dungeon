@@ -62,7 +62,7 @@ class Render:
     
     def draw_hud(self, player, loaded_mob:list):
         self._draw_player_hp(player)
-        self._draw_mob_hp(loaded_mob)
+        self._draw_mob_hp(loaded_mob.values())
         self._draw_arrow_amount(player)
         #self._draw_ability()
     
