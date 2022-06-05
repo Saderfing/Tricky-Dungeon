@@ -36,5 +36,3 @@ class GameManager:
     
     def create_mob(self):
         self.gen.generate()
-
-        

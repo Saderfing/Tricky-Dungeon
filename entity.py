@@ -17,14 +17,14 @@ class Entity:
         self.SIMULATION_DISTANCE = 3
 
         self.BASE_HP = HP
-        self.BASE_DF = 0
-        self.BASE_SP = 0
-        self.BASE_DMG = 0
+        self.BASE_DF = DF
+        self.BASE_SP = SP
+        self.BASE_DMG = DMG
 
         self.health = HP
         self.defence = DF
         self.speed = SP
-        self.damage = DMG
+        self.dmg = DMG
 
         self.velocity = [0, 0] # 2 integers to represent the x and y velocity
 
@@ -32,13 +32,16 @@ class Entity:
         damage = damage - self.defence
         self.health -= damage
 
+    def check_HP(self):
+        pass
+        
 class Projectil:
     def __init__(self, pos:list, angle:int, damage:int, speed:int, graphics_path:str, life_time:int) -> None:
         self.pos = pos
         self.angle = angle
         self.life_time = life_time
 
-        self.speed = speed
+        self.speed = 1
         self.damage = damage
         self.velocity = [math.cos(self.angle) * self.speed, math.sin(self.angle) * self.speed]
 
@@ -50,15 +53,46 @@ class Projectil:
         self.height = self.GFX.get_height()
         self.center = (self.width + self.height)//2
 
-    def update(self):
+    def update(self, targets:list):
         if self.life_time <= 0:
             return -1
 
         self.pos[0] += self.velocity[0]
         self.pos[1] += self.velocity[1]
         self.life_time -= 1
-        return 0
+        
+       
+        
+        self.attack(targets)
 
+        self.apply_movement()
+        
+    def collide(self):
+        TSIZE = 50
+        for rect_row in range(max(0, int(self.pos[1]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.map_rect), int(self.pos[1]/TSIZE) + self.SIMULATION_DISTANCE)):
+            for rect_line in range(max(0, int(self.pos[0]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.map_rect[rect_row]), int(self.pos[0]/TSIZE) + self.SIMULATION_DISTANCE)):
+                rect = self.map_rect[rect_row][rect_line]
+                if rect is None:
+                    pass
+                else:
+                    if rect.colliderect(self.pos[0] + self.velocity[0], self.pos[1], self.width, self.height):
+                        self.velocity[0] = 0
+                    if rect.colliderect(self.pos[0], self.pos[1]  + self.velocity[1], self.width, self.height):
+                        self.velocity[1] = 0
+
+    def apply_movement(self):
+        self.pos[0] += self.velocity[0]
+        self.pos[1] += self.velocity[1]
+        self.rect.x += self.velocity[0]
+        self.rect.y += self.velocity[1]
+
+    def attack(self, targets:list):
+        for target in targets:
+            
+            if target.rect.colliderect(self.rect):
+                
+                target.damage(self.dmg)
+              
 class Player(Entity):
     def __init__(self, pos: list, HP: int, DF: int, SP: int, DMG: int, the_map):
         graphics = pygame.transform.scale(pygame.image.load('assets/player.png'), (22,22)).convert_alpha()
@@ -67,11 +101,11 @@ class Player(Entity):
         self.GFX.set_colorkey((0,0,0))
 
         self.the_map = the_map
-
+        
         self.arrows = 5
         self.arrow_speed = 10
         self.shot_arrows = []
-        self.cooldown = 1000
+        self.cooldown = 100
         self.on_cooldown = False
         self.last_shot = pygame.time.get_ticks()
         self.refill_arrows = 100 # time between new arrow
@@ -83,12 +117,14 @@ class Player(Entity):
                      pygame.K_SPACE: 0}
         self.mouse = [0, 0, 0]
 
-    def update(self, screen_size):
+    def update(self, screen_size, mobs):
         self._check_inputs()
         self._get_mouse_angle(screen_size)
 
         self.reload_arrow()
         self.shoot()
+        if len(self.shot_arrows) > 0:
+            self.arrow_manager(mobs)
 
         self.input_movement()
 
@@ -111,7 +147,6 @@ class Player(Entity):
 
             self.arrows += 1
 
-
     def shoot(self):
         if pygame.time.get_ticks() - self.last_shot > self.cooldown:
             self.on_cooldown = False
@@ -122,12 +157,10 @@ class Player(Entity):
             self.last_shot = pygame.time.get_ticks()
             self.arrows -= 1
 
-        if len(self.shot_arrows) > 0:
-            self.arrow_manager()
 
-    def arrow_manager(self):
+    def arrow_manager(self, mobs):
         for arrow, index in zip(self.shot_arrows, range(len(self.shot_arrows))):
-            state = arrow.update()
+            state = arrow.update(mobs)
             if state == -1:
                 self.shot_arrows.pop(index)
 

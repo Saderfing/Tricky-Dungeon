@@ -1,5 +1,6 @@
 from random import randint
 import pygame, sys
+from boss import Livid
 import render
 import generation
 from entity import Player
@@ -27,7 +28,7 @@ player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].
 clock = pygame.time.Clock()
 
 while renderer.run:
-    player.update([WIDTH, HEIGHT])
+    player.update([WIDTH, HEIGHT], gameManager.loaded_mob)
     gameManager.load_mob(player.pos)
     for mob in gameManager.loaded_mob:
         mob.update(player)

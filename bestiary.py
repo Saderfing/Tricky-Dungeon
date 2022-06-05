@@ -13,14 +13,16 @@ class Goblin(Entity):
         super().__init__(pos, self.GFX, HP, DF, SP, DMG)
 
         self.speed = self.speed * (randint(75,150) / 100)
-
+    
     def update(self, player):
         check_collide = self.pathfind(player.pos)
         if check_collide:
             self.collide()
-        #self.attack()
+        self.attack(player)
+        
 
         self.apply_movement()
+
     def pathfind(self, pos:list):
         check_collide = True
         local_pos = Vec2(pos[0] - self.pos[0], pos[1] - self.pos[1])
