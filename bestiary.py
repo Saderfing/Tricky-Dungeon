@@ -54,6 +54,8 @@ class Goblin(Entity):
         self.rect.x += self.velocity[0]
         self.rect.y += self.velocity[1]
 
+        self.center = [self.pos[0] + int(self.width/2), self.pos[1] + int(self.height/2)]
+
     def attack(self, player):
         if self.rect.colliderect(player.rect):
             print("toucher le joueur")

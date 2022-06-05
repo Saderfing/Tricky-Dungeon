@@ -12,7 +12,7 @@ class Entity:
         self.rect = GFX.get_rect()
         self.width = self.GFX.get_width()
         self.height = self.GFX.get_height()
-        self.center = (self.width + self.height)//2
+        self.center = [self.pos[0] + int(self.width/2), self.pos[1] + int(self.height/2)]
 
         self.SIMULATION_DISTANCE = 3
 

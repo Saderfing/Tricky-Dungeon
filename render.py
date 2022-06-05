@@ -72,14 +72,24 @@ class Render:
         self.screen.blit(surf, (self.screen.get_width() - surf.get_width() - 75, self.screen.get_height() - 55))
     
     def _draw_player_hp(self, player):
-        hp_box = pygame.Surface((300, 40))
+        hp_box = pygame.Surface((300, 40)).convert()
         hp_box.fill((169,59, 59))
         
-        hp = pygame.Surface((int((player.health/player.BASE_HP)* 300), 40))
+        hp = pygame.Surface((int((player.health/player.BASE_HP)* 300), 40)).convert()
         hp.fill((182, 213, 60))
 
         hp_box.blit(hp, (0,0))
         self.screen.blit(hp_box, (self.screen.get_width()//2 - hp_box.get_width()//2, self.screen.get_height() - hp_box.get_height() - 30))
     
     def _draw_mob_hp(self, loaded_mob):
-        pass
+        for mob in loaded_mob:
+            hp_box_w = 35
+            hp_box_h = 7
+            hp_box = pygame.Surface((hp_box_w, hp_box_h)).convert()
+            hp_box.fill((169,59, 59))
+            
+            hp = pygame.Surface((int((mob.health/mob.BASE_HP)* hp_box_w), hp_box_h)).convert()
+            hp.fill((182, 213, 60))
+
+            hp_box.blit(hp, (0,0))
+            self.screen.blit(hp_box, (mob.center[0] - self.player_scroll[0] - hp_box.get_width()//2, mob.pos[1] - self.player_scroll[1] - 15))
