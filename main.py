@@ -42,11 +42,11 @@ while renderer.run:
     
     for arrow in player.shot_arrows:
         renderer.draw_object(arrow)
-        pygame.draw.rect(screen, [255, 0, 0], pygame.Rect(arrow.rect.x - renderer.player_scroll[0], arrow.rect.y - renderer.player_scroll[1], arrow.width, arrow.height))
+        #pygame.draw.rect(screen, [255, 0, 0], pygame.Rect(arrow.rect.x - renderer.player_scroll[0], arrow.rect.y - renderer.player_scroll[1], arrow.width, arrow.height))
     
     for mob in gameManager.room_mob_dict.values():
         renderer.draw_object(mob)
-        pygame.draw.rect(screen, [255, 0, 0], pygame.Rect(mob.rect.x - renderer.player_scroll[0], mob.rect.y - renderer.player_scroll[1], mob.width, mob.height))
+        #pygame.draw.rect(screen, [255, 0, 0], pygame.Rect(mob.rect.x - renderer.player_scroll[0], mob.rect.y - renderer.player_scroll[1], mob.width, mob.height))
     
 
     gameManager.check_mob_life()

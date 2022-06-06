@@ -19,7 +19,7 @@ class GameManager:
         mob_dict = dict()
         for room in self.gen.room_list:
             for mob in range(room.num_mob):
-                mob_dict[str(room_index) + str(mob)]  = Goblin([randint(room.topleft[0] * self.TSIZE, room.downright[0]* self.TSIZE - 22), randint(room.topleft[1]*self.TSIZE, room.downright[1] * self.TSIZE) - 22], 100, randint(0, 4), 2, 5, map_rect)
+                mob_dict[str(room_index) + str(mob)]  = Goblin([randint(room.topleft[0] * self.TSIZE, room.downright[0]* self.TSIZE - 22), randint(room.topleft[1]*self.TSIZE, room.downright[1] * self.TSIZE) - 22], 100, randint(0, 4), 2, 10, map_rect)
             room_index += 1
         self.room_mob_dict = mob_dict
             

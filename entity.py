@@ -32,6 +32,8 @@ class Entity:
     def apply_damage(self, damage):
         damage -= self.defence
         self.health -= damage
+        if self.health <= 0:
+            self.health = 0
 
     def check_HP(self):
         pass

@@ -13,11 +13,15 @@ class Goblin(Entity):
         super().__init__(pos, self.GFX, HP, DF, SP, DMG)
 
         self.speed = self.speed * (randint(75,150) / 100)
+
+        self.current_time = 0
+        self.collide_time = 0
     
     def update(self, player):
         check_collide = self.pathfind(player.pos)
         if check_collide:
             self.collide()
+        self.current_time = pygame.time.get_ticks()
         self.attack(player)
         
 
@@ -57,8 +61,9 @@ class Goblin(Entity):
         self.center = [self.pos[0] + int(self.width/2), self.pos[1] + int(self.height/2)]
 
     def attack(self, player):
-        if self.rect.colliderect(player.rect):
-            print("toucher le joueur")
+        if self.rect.colliderect(player.rect) and self.current_time - self.collide_time > 500:
+            self.collide_time = pygame.time.get_ticks()
+            player.apply_damage(self.dmg)
 
 if __name__ == "__main__":
     pygame.init()
