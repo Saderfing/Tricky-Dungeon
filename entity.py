@@ -30,14 +30,16 @@ class Entity:
         self.velocity = [0, 0] # 2 integers to represent the x and y velocity
 
     def apply_damage(self, damage):
-        damage -= self.defence
-        self.health -= damage
-        if self.health <= 0:
-            self.health = 0
 
-    def check_HP(self):
-        pass
-        
+        damage = round(damage * self.defence//self.defence + 1)
+
+
+        health = self.health
+        health -= damage
+        if health <= 0:
+            health = 0
+        self.health = health
+
 class Projectil:
     def __init__(self, pos:list, angle:int, damage:int, speed:int, graphics_path:str, life_time:int) -> None:
         self.pos = pos
@@ -66,19 +68,6 @@ class Projectil:
 
         self.apply_movement()
         
-    def collide(self):
-        TSIZE = 50
-        for rect_row in range(max(0, int(self.pos[1]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.map_rect), int(self.pos[1]/TSIZE) + self.SIMULATION_DISTANCE)):
-            for rect_line in range(max(0, int(self.pos[0]/TSIZE) - self.SIMULATION_DISTANCE), min(len(self.map_rect[rect_row]), int(self.pos[0]/TSIZE) + self.SIMULATION_DISTANCE)):
-                rect = self.map_rect[rect_row][rect_line]
-                if rect is None:
-                    pass
-                else:
-                    if rect.colliderect(self.pos[0] + self.velocity[0], self.pos[1], self.width, self.height):
-                        self.velocity[0] = 0
-                    if rect.colliderect(self.pos[0], self.pos[1]  + self.velocity[1], self.width, self.height):
-                        self.velocity[1] = 0
-
     def apply_movement(self):
         self.pos[0] += self.velocity[0]
         self.pos[1] += self.velocity[1]
@@ -86,7 +75,7 @@ class Projectil:
         self.rect.y = self.pos[1]
 
     def attack(self, targets:list):
-        for target in targets: 
+        for target in targets:
             if self.rect.colliderect(target.rect):
                 target.apply_damage(self.DMG)
                 self.life_time = 0
@@ -106,7 +95,8 @@ class Player(Entity):
         self.cooldown = 350
         self.on_cooldown = False
         self.last_shot = pygame.time.get_ticks()
-        self.refill_arrows = 100 # time between new arrow
+        self.refill_arrows = 2000 # time between new arrow
+        self.REFILL_TIME = 2000
 
         self.keys = {pygame.K_UP: 0,
                      pygame.K_DOWN: 0,
@@ -144,10 +134,10 @@ class Player(Entity):
         self.angle = angle
 
     def reload_arrow(self):
-        if pygame.time.get_ticks() % self.refill_arrows == 0:
-
+        if pygame.time.get_ticks() -  self.refill_arrows >= 0:
             self.arrows += 1
-
+            self.refill_arrows = pygame.time.get_ticks() + self.REFILL_TIME
+            
     def shoot(self):
         if pygame.time.get_ticks() - self.last_shot > self.cooldown:
             self.on_cooldown = False
