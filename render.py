@@ -25,12 +25,26 @@ class Render:
         
         self.defaultFont = pygame.font.Font(pygame.font.get_default_font(), 25)
         self.m4f7 = pygame.font.Font("assets/m5x7.ttf", 40)
+        self.m4f7_small = pygame.font.Font("assets/m5x7.ttf", 33)
 
+        self.candle_frame = 0
+        self.candle_texture = [self._scale(pygame.image.load("assets/candle/candleB_01.png").convert_alpha()), 
+                            self._scale(pygame.image.load("assets/candle/candleB_02.png").convert_alpha()), 
+                            self._scale(pygame.image.load("assets/candle/candleB_03.png").convert_alpha()),
+                            self._scale(pygame.image.load("assets/candle/candleB_04.png").convert_alpha())]
+    
     def draw_tilemap(self, tiles:list, player):
 
         for y in range(max(int(player.pos[1]/self.TILE_SIZE) - self.RENDER_DISTANCE,  0), min(int(player.pos[1]/self.TILE_SIZE) + self.RENDER_DISTANCE, len(tiles))):
             for x in range(max(int(player.pos[0]/self.TILE_SIZE) - self.RENDER_DISTANCE,  0), min(int(player.pos[0]/self.TILE_SIZE) + self.RENDER_DISTANCE, len(tiles))):
-                self.screen.blit(self.textures[tiles[y][x]],((x*self.TILE_SIZE)-self.player_scroll[0],(y*self.TILE_SIZE)-self.player_scroll[1]))
+                
+                if tiles[y][x] == 20:
+                    self.screen.blit(self.candle_texture[int(self.candle_frame)],((x*self.TILE_SIZE)-self.player_scroll[0],(y*self.TILE_SIZE)-self.player_scroll[1]))
+                    self.candle_frame += .1
+                    if self.candle_frame > len(self.candle_texture):
+                        self.candle_frame = 0
+                else:
+                    self.screen.blit(self.textures[tiles[y][x]],((x*self.TILE_SIZE)-self.player_scroll[0],(y*self.TILE_SIZE)-self.player_scroll[1]))
     
     def calculate_scroll(self, player):
         SCREEN_SIZE = self.screen.get_size()
@@ -60,10 +74,11 @@ class Render:
     def _scale(self, image:pygame.Surface):
         return pygame.transform.scale(image,  (self.TILE_SIZE, self.TILE_SIZE))
     
-    def draw_hud(self, player, loaded_mob:list):
-        self._draw_player_hp(player)
+    def draw_hud(self, player, loaded_mob:list, mob_dict):
         self._draw_mob_hp(loaded_mob.values())
         self._draw_arrow_amount(player)
+        self._draw_player_hp(player)
+        self._draw_num_left_mob(mob_dict)
         #self._draw_ability()
     
     def _draw_arrow_amount(self, player):
@@ -93,3 +108,18 @@ class Render:
 
             hp_box.blit(hp, (0,0))
             self.screen.blit(hp_box, (mob.center[0] - self.player_scroll[0] - hp_box.get_width()//2, mob.pos[1] - self.player_scroll[1] - 15))
+
+    def _draw_num_left_mob(self, mob_dict):
+        if len(mob_dict.values()) == 0:
+            the_str = "Start the boss fight at the candle"
+        else:
+            the_str = str(len(mob_dict.values())) + " Mob left" 
+        surf = self.m4f7.render(the_str, False, (255, 255, 255)).convert_alpha()
+        self.screen.blit(surf,  [self.screen.get_width() - surf.get_width() - 40, 40])
+        
+    def draw_str(self, the_str:str, pos:list, color:tuple, size:str):
+        if size == "small":
+            surf = self.m4f7_small.render(the_str, False, color).convert_alpha()
+        elif size == "normal":
+            surf = self.m4f7.render(the_str, False, color).convert_alpha()
+        self.screen.blit(surf, pos)

@@ -6,6 +6,7 @@ import generation
 from entity import Player
 from bestiary import Goblin
 from game import GameManager
+from utilities import Vec2
 
 pygame.init()
 
@@ -50,8 +51,9 @@ while renderer.run:
     
 
     gameManager.check_mob_life()
-    pygame.draw.rect(screen, [0, 0, 255], player.rect)
-    renderer.draw_hud(player, gameManager.loaded_mob)
+    #pygame.draw.rect(screen, [0, 0, 255], player.rect)
+    if len(gameManager.room_mob_dict.values()) == 0: renderer.draw_str("The candle (space)",[gen.room_list[-1].center[0]*renderer.TILE_SIZE - renderer.player_scroll[0] + 55,gen.room_list[-1].center[1]*renderer.TILE_SIZE - renderer.player_scroll[1]], (255, 255, 255), "small") 
+    renderer.draw_hud(player, gameManager.loaded_mob, gameManager.room_mob_dict)
     pygame.display.update()
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -59,9 +61,17 @@ while renderer.run:
             pygame.quit()
             sys.exit()
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_BACKSPACE:
                 gen.generate()
                 player.pos = [gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ]
                 player.the_map = renderer.get_rect_list(gen.the_map)
+                gameManager.spawn_mob(renderer.get_rect_list(gen.the_map))
+            if event.key == pygame.K_SPACE and Vec2.Distance(Vec2(player.pos[0], player.pos[1]), Vec2(gen.room_list[-1].center[0] *renderer.TILE_SIZE, gen.room_list[-1].center[1]*renderer.TILE_SIZE)) < 100 and len(gameManager.room_mob_dict.values()) == 0:
+                print("start boss fight!!")
+           
+        if event.type == player.PLAYER_DIE:
+            gen.generate()
+            gameManager.spawn_mob(renderer.get_rect_list(gen.the_map))
+            player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ], 100, 5, 5, 50,  renderer.get_rect_list(gen.the_map))
 
     clock.tick(renderer.FPS)

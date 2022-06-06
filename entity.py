@@ -114,8 +114,11 @@ class Player(Entity):
                      pygame.K_LEFT: 0,
                      pygame.K_SPACE: 0}
         self.mouse = [0, 0, 0]
+        self.PLAYER_DIE = pygame.USEREVENT + 1
 
     def update(self, screen_size, mobs):
+        if self.health <= 0:
+            pygame.event.post(pygame.event.Event(self.PLAYER_DIE))
         self._check_inputs()
         self._get_mouse_angle(screen_size)
 
@@ -190,5 +193,5 @@ class Player(Entity):
     def apply_movement(self):
         self.pos[0] += self.velocity[0]
         self.pos[1] += self.velocity[1]
-        self.rect.x += self.velocity[0]
-        self.rect.y += self.velocity[1]
+        self.rect.x = self.pos[0]
+        self.rect.y = self.pos[1]

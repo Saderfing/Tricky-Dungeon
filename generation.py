@@ -87,6 +87,7 @@ class Generator:
         for y in range(new_room.topleft[1], new_room.downright[1]):
             for x in range(new_room.topleft[0], new_room.downright[0]):
                 self.the_map[y][x] = self._random_floor()
+        
     
     def place_chest_room(self):
         
@@ -107,7 +108,7 @@ class Generator:
         #print("###################### Place found ######################")
         #print("pos x", try_place_x, "pos y", try_place_y)
         
-        self.room_list.insert(rand.randint(0,len(self.room_list)), new_room)
+        self.room_list.insert(rand.randint(1,len(self.room_list) -1), new_room)
         
         for y in range(new_room.topleft[1], new_room.downright[1]):
             for x in range(new_room.topleft[0], new_room.downright[0]):
@@ -154,7 +155,7 @@ class Generator:
         
         for room in range(1, len(self.room_list)):
             self.make_corridor(self.room_list[room-1].center, self.room_list[room].center)
-
+        self.the_map[self.room_list[-1].topleft[1]+8][self.room_list[-1].topleft[0]+8] = 20
 
 
 if __name__ == "__main__":
