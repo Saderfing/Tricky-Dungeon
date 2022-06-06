@@ -19,7 +19,8 @@ class Render:
                          10:self._scale(pygame.image.load("assets/tiles/floor3.png")).convert(),
                          11:self._scale(pygame.image.load("assets/tiles/floor4.png")).convert(),
                          12:self._scale(pygame.image.load("assets/tiles/floor5.png")).convert(),
-                         13:self._scale(pygame.image.load("assets/tiles/floor2.png")).convert()}
+                         13:self._scale(pygame.image.load("assets/tiles/floor2.png")).convert(), 
+                         21:pygame.transform.scale(pygame.image.load("assets/tiles/chest.png"), (52, 50)).convert_alpha()}
         
         self.arrow_inv = pygame.transform.scale(pygame.image.load("assets/arrow_sideways.png"), (50, 50)).convert_alpha()
         
@@ -66,7 +67,7 @@ class Render:
 
         for y in range(len(the_map)):
             for x in range(len(the_map[y])):
-                if the_map[y][x] < 10:
+                if the_map[y][x] < 10 or the_map[y][x] == 21:
                     rect_list[y][x] = pygame.Surface((self.TILE_SIZE, self.TILE_SIZE)).get_rect(topleft=(x*self.TILE_SIZE, y*self.TILE_SIZE))
         return rect_list
 

@@ -7,7 +7,6 @@ from entity import Player
 from bestiary import Goblin
 from game import GameManager
 from utilities import Vec2
-
 pygame.init()
 
 HEIGHT = 720
@@ -22,6 +21,7 @@ gen.generate()
 
 gameManager = GameManager(gen)
 gameManager.spawn_mob(renderer.get_rect_list(gen.the_map))
+gameManager.create_chest()
 
 player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ], 100, 5, 5, 50,  renderer.get_rect_list(gen.the_map))
 
@@ -66,12 +66,14 @@ while renderer.run:
                 player.pos = [gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ]
                 player.the_map = renderer.get_rect_list(gen.the_map)
                 gameManager.spawn_mob(renderer.get_rect_list(gen.the_map))
-            if event.key == pygame.K_SPACE and Vec2.Distance(Vec2(player.pos[0], player.pos[1]), Vec2(gen.room_list[-1].center[0] *renderer.TILE_SIZE, gen.room_list[-1].center[1]*renderer.TILE_SIZE)) < 100 and len(gameManager.room_mob_dict.values()) == 0:
-                print("start boss fight!!")
-           
+            if event.key == pygame.K_SPACE:
+                if Vec2.Distance(Vec2(player.pos[0], player.pos[1]), Vec2(gen.room_list[-1].center[0] *renderer.TILE_SIZE, gen.room_list[-1].center[1]*renderer.TILE_SIZE)) < 100 and len(gameManager.room_mob_dict.values()) == 0:
+                    print("start boss fight!!")
+                gameManager.chest.update(player)
         if event.type == player.PLAYER_DIE:
             gen.generate()
             gameManager.spawn_mob(renderer.get_rect_list(gen.the_map))
+            gameManager.create_chest()
             player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ], 100, 5, 5, 50,  renderer.get_rect_list(gen.the_map))
 
     clock.tick(renderer.FPS)
