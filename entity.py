@@ -31,7 +31,7 @@ class Entity:
 
     def apply_damage(self, damage):
 
-        damage = round(damage * self.defence//self.defence + 1)
+        damage = round(damage//(self.defence + 1))
 
 
         health = self.health

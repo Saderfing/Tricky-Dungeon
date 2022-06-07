@@ -1,43 +1,62 @@
 from entity import *
 import pygame
-from random import randint, choices
+from random import randint, choices, random
 import math
 from utilities import Vec2
 
 class Livid(Entity):
-    def __init__(self, pos:list, map_rect:list, speed=7) -> None:
+    def __init__(self, pos:list, map_rect:list, speed=5, HP=1000) -> None:
         GFX = pygame.image.load('assets/livid.png').convert_alpha()
         HP, DF, SP, DMG = 1000, 50, speed, 10
         
         super().__init__(pos, GFX, HP, DF, SP, DMG)
         self.sight_distance = 1000
         self.map_rect = map_rect
+        self.current_time = pygame.time.get_ticks()
         
         self.last_hit = 0
-        self.attack_speed = 500
-        self.SUPER_SPEED = 15
-        self.jump_start = 0
-        self.jump_time = 5000
-        self.jump_cooldown = 5000
-        self.next_jump = 0
+        self.ATTACK_SPEED = 500
+        self.PROJECTIL_SPEED = 10
         
         self.phases = [self._shadow_dupes, self._shadow_daggers, self._shadow_jump, self._shadow_snipe] # all the phases call
         self.phases_wheight = [0 for i in range(len(self.phases))]
-        self.phase_indexs = [i for i in range(len(self.phases))]
+        self.DISTANTE_ATTACK = [0.1, 0.1, 0.5, 0.3]
+        self.NORMAL_ATTACK = [0.3, 0.3, 0.2, 0.2]
+        self.PHASE_INDEXS = [i for i in range(4)]
         self.current_phase = 0 # index of the function of the corresponding phase
-        self.new_phase = 100 # time between phases
+        self.new_phase = 1000 # time between phases
+        
         self.new_phase_delta = 0
         
         self.shadows = []   # store shadows:Shadows child
+        
         self.daggers = []   # store daggers:Projectiles child
         self.daggers_angle = math.pi/6 
-        self.delta_angle = 0 # random angle added for randomness to "Shadow daggers attack"
+        self.daggers_delta_angle = random() # random angle added for randomness to "Shadow daggers attack"
+        self.daggers_last_shot = 0
+        self.DAGGERS_COOLDOWN = 2000
+           
+        self.SUPER_SPEED = 10
+        self.jump_start = 0
+        self.isJumping = False
+        self.JUMP_TIME = 5000
+        self.JUMP_COOLDOWN = 5000
+        self.next_jump = 0
+        
+        self.snipes = None   # store daggers:Projectiles child 
+        self.snipe_last_shot = 0
+        self.SNIPE_COOLDOWN = 5000
         
         self.player = None
         
     def update(self, player):
+        self.current_time = pygame.time.get_ticks()
         self.player = player
         self.attack()
+        
+        if self.isJumping:
+            self._check_jump()
+        
         check_collide = self.pathfind(self.player.pos)
         if check_collide:
             self.collide()
@@ -87,26 +106,18 @@ class Livid(Entity):
     
     def attack(self):
         dist = self._check_player_distance()
-        if dist <= 50 and pygame.time.get_ticks() - self.last_hit >=0:
+        if dist <= 50 and self.current_time - self.last_hit >=0:
             self.player.apply_damage(self.dmg)
-            self.last_hit = pygame.time.get_ticks() + self.attack_speed 
+            self.last_hit = self.current_time + self.ATTACK_SPEED 
         
-        if pygame.time.get_ticks() - self.new_phase - self.new_phase_delta >= 0:
-            self.phases_wheight[0] += 5
-            self.phases_wheight[1] += 5
-            self.phases_wheight[2] += 9 if dist >= 500 and pygame.time.get_ticks() - self.next_jump else 0
-            self.phases_wheight[3] += 7 if dist >= 500 else 5
-
-            total = 0
+        if self.current_time - self.new_phase - self.new_phase_delta >= 0:
+            self._choose_attack(dist)
             
-            for i in self.phases_wheight:
-                total += i
-            
-            self.phases_wheight = list(map(lambda x:x/total, self.phases_wheight))
-            print(self.phase_indexs, self.phases_wheight)
-            self.current_phase = choices(self.phase_indexs, self.phases_wheight)[0]
-            print(self.current_phase)
-            
+    def _choose_attack(self, dist):
+        self.phases_wheight = self.DISTANTE_ATTACK if dist >= 500 else self.NORMAL_ATTACK
+        self.current_phase = choices(self.PHASE_INDEXS, self.phases_wheight)[0]
+        self.new_phase = self.current_time
+        self.new_phase_delta = randint(0, 1000)
             
     def _child_manager(self):
         for dagger, index in zip(self.daggers, range(len(self.daggers))):
@@ -115,16 +126,27 @@ class Livid(Entity):
                 self.daggers.pop(index)
         
         for shadow, index in zip(self.shadows, range(len(self.shadows))):
-            state_shadow = shadow.update()
+            state_shadow = shadow.update(self.player)
             if state_shadow == -1:
                 self.shadows.pop(index)
        
     def _shadow_daggers(self):
-        for i in range(12):
-            self.daggers.append(Projectil(self.pos.copy(), i*self.daggers_angle, 10, 10, 'assets/shadow_daggers.png', 50))
-
+        if self.current_time - self.daggers_last_shot >= self.DAGGERS_COOLDOWN:
+            for i in range(12):
+                self.daggers.append(Projectil(self.pos.copy(), i*(self.daggers_angle+self.daggers_delta_angle), self.PROJECTIL_SPEED, 10, 'assets/shadow_daggers.png', 50))
+            self.daggers_last_shot = self.current_time
+ 
     def _shadow_jump(self):
-        self.speed = 15
+        if not self.isJumping and self.current_time - self.next_jump >= 0:
+            self.speed = self.SUPER_SPEED
+            self.next_jump = self.current_time + self.JUMP_COOLDOWN
+            self.isJumping = True
+            
+        self._check_jump()
+        
+    def _check_jump(self):
+        if self.current_time - self.JUMP_TIME >= 0:
+            self.speed = self.BASE_SP
 
     def _shadow_dupes(self):
         if len(self.shadows) > 0:
@@ -133,18 +155,43 @@ class Livid(Entity):
             self.shadows.append(Shadows([self.pos[0] + randint(-10, 10), self.pos[1] + randint(-10, 10)], self.map_rect))
 
     def _shadow_snipe(self):
-        pass
+        if self.current_time - self.snipe_last_shot >= 0:
+            self.snipe_last_shot = self.current_time + self.SNIPE_COOLDOWN
+            angle = self._aim_target()
+            self.snipe_proj = Projectil(self.pos.copy(), angle, self.dmg, self.PROJECTIL_SPEED, "assets/shadow_daggers.png", 1000)
+        
+    def _aim_target(self):
+        vect = Vec2(self.pos[0] - self.player.pos[0], self.pos[1] - self.player.pos[1])
+        vect = vect.normalized()
+        angle = math.atan2(vect.y, vect.x)
+        
+        return angle
     
 class Shadows(Livid):
     def __init__(self, pos:list, map_rect:list) -> None:
-        super().__init__(pos, map_rect, randint(5, 10))
+        super().__init__(pos, map_rect, randint(5, 10), 1)
 
-    def update(self):
-        pass
-    
-if __name__ == '__main__':
-    #pygame.init()
+    def update(self, player):
+        self.player = player
+        self.current_time = pygame.time.get_ticks()
+        self.attack()
+        check_collide = self.pathfind(self.player.pos)
+        if check_collide:
+            self.collide()
+            
+        self.apply_movement()
+        
+    def attack(self):
+        dist = self._check_player_distance()
+        if dist <= 50 and self.current_time - self.last_hit >=0:
+            self.player.apply_damage(self.dmg)
+            self.last_hit = self.current_time + self.ATTACK_SPEED 
+        
+        if randint(0,3) == 0 and self.current_time - self.snipe_last_shot >= 0:
+            self._shadow_snipe()
 
+        
+if __name__ == '__main__': 
     WIDTH = 800
     HEIGHT = 400
     win = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -154,6 +201,7 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
     FPS = 60
     while True:
+        print(player.health)
         clock.tick(FPS)
         win.fill((0,0,0))
         player.update([WIDTH, HEIGHT], [boss, *boss.shadows])
