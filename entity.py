@@ -31,7 +31,7 @@ class Entity:
 
     def apply_damage(self, damage):
 
-        damage = round(damage * self.defence//self.defence + 1)
+        damage = round(abs(damage//(self.defence + 1)))
 
 
         health = self.health
@@ -88,7 +88,7 @@ class Player(Entity):
         self.GFX.set_colorkey((0,0,0))
 
         self.the_map = the_map
-        self.dungeon_niv = 0
+        self.dungeon_niv = 1
         
         self.arrows = 5
         self.arrow_speed = 10
