@@ -19,8 +19,6 @@ def end_lvl(gen_:Generator, gameManager_, player_):
     player_.the_map = renderer.get_rect_list(gen.the_map)
     player_.dungeon_niv += 1
 
-
-
 HEIGHT = 720
 WIDTH = 1280
 
@@ -67,9 +65,10 @@ while renderer.run:
 
     if gameManager.isBossSpawned:
         renderer.draw_object(gameManager.livid)
-        pygame.draw.rect(screen, [0,255,0], pygame.Rect(gameManager.livid.rect.x - renderer.player_scroll[0], gameManager.livid.rect.y - renderer.player_scroll[1], gameManager.livid.width, gameManager.livid.height))
-        print(gameManager.livid.rect.topleft)
-        print(player.rect.topleft)
+        for shadow in gameManager.livid.shadows:
+            renderer.draw_object(shadow)
+        for projectil in gameManager.livid.daggers:
+            renderer.draw_object(projectil)
 
     gameManager.check_mob_life()
     #pygame.draw.rect(screen, [0, 0, 255], player.rect)

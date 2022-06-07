@@ -24,7 +24,7 @@ class Livid(Entity):
         self.NORMAL_ATTACK = [0.3, 0.3, 0.2, 0.2]
         self.PHASE_INDEXS = [i for i in range(4)]
         self.current_phase = 0 # index of the function of the corresponding phase
-        self.new_phase = 1000 # time between phases
+        self.new_phase = 100 # time between phases
         
         self.new_phase_delta = 0
         
@@ -53,7 +53,7 @@ class Livid(Entity):
         self.current_time = pygame.time.get_ticks()
         self.player = player
         self.attack()
-        
+
         if self.isJumping:
             self._check_jump()
         
@@ -64,7 +64,7 @@ class Livid(Entity):
         self.apply_movement()
         self.phases[self.current_phase]()
         self._child_manager()
-        return self.health
+ 
         
     def pathfind(self, pos:list):
         check_collide = True
@@ -125,8 +125,8 @@ class Livid(Entity):
                 self.daggers.pop(index)
         
         for shadow, index in zip(self.shadows, range(len(self.shadows))):
-            state_shadow = shadow.update(self.player)
-            if state_shadow == -1:
+            shadow.update(self.player)
+            if shadow.health <= 0:
                 self.shadows.pop(index)
        
     def _shadow_daggers(self):
@@ -189,7 +189,6 @@ class Shadows(Livid):
         if randint(0,3) == 0 and self.current_time - self.snipe_last_shot >= 0:
             self._shadow_snipe()
 
-        
 if __name__ == '__main__': 
     WIDTH = 800
     HEIGHT = 400

@@ -38,13 +38,12 @@ class GameManager:
         self.isBossSpawned = True
 
     def update(self, player):
-        self.targets = [i for i in self.loaded_mob.values()] + [self.livid] if self.livid is not None else self.loaded_mob.values()
+        self.targets = [i for i in self.loaded_mob.values()] + [self.livid] + self.livid.shadows if self.livid is not None else self.loaded_mob.values()
         
         if self.isBossSpawned:
-            print("e")
-            livid_state = self.livid.update(player)
-            print(livid_state)
-            if livid_state <= 0:
+            self.livid.update(player)
+            
+            if self.livid.health <= 0:
                 self.livid = None
                 if 'livid' in self.loaded_mob.keys():
                     self.loaded_mob['livid'] = None
@@ -91,7 +90,6 @@ class GameManager:
 
     def create_mob(self):
         self.gen.generate()
-
 
 class Chest:
     def __init__(self, pos) -> None:
