@@ -39,6 +39,7 @@ while renderer.run:
     player.update([WIDTH, HEIGHT], gameManager.loaded_mob.values())
     gameManager.load_mob(player.pos)
     gameManager.update(player)
+    gameManager.chest.update(player)
 
     for mob in gameManager.loaded_mob.values():
         mob.update(player)
