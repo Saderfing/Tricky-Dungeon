@@ -24,7 +24,6 @@ class Render:
         
         self.arrow_inv = pygame.transform.scale(pygame.image.load("assets/arrow_sideways.png"), (50, 50)).convert_alpha()
         
-        self.defaultFont = pygame.font.Font(pygame.font.get_default_font(), 25)
         self.m4f7 = pygame.font.Font("assets/m5x7.ttf", 40)
         self.m4f7_small = pygame.font.Font("assets/m5x7.ttf", 33)
 
@@ -60,7 +59,7 @@ class Render:
 
     def draw_debug(self, clock:pygame.time.Clock):
 
-        if self.toggled_fps: self.screen.blit(self.defaultFont.render(str(round(clock.get_fps())), True, (250,10,10)), (10,10))
+        if self.toggled_fps: self.screen.blit(self.m4f7.render(str(round(clock.get_fps())), True, (250,10,10)), (10,10))
 
     def get_rect_list(self,the_map:list):
         rect_list = [[None for x in range(len(the_map[y]))] for y in range(len(the_map))]
