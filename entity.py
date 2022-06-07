@@ -99,6 +99,7 @@ class Player(Entity):
         self.GFX.set_colorkey((0,0,0))
 
         self.the_map = the_map
+        self.dungeon_niv = 0
         
         self.arrows = 5
         self.arrow_speed = 10

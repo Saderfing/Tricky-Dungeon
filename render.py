@@ -123,3 +123,4 @@ class Render:
         elif size == "normal":
             surf = self.m4f7.render(the_str, False, color).convert_alpha()
         self.screen.blit(surf, pos)
+    
