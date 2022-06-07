@@ -23,7 +23,6 @@ class Goblin(Entity):
             self.collide()
         self.current_time = pygame.time.get_ticks()
         self.attack(player)
-        
 
         self.apply_movement()
 
