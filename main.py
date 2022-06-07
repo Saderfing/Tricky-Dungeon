@@ -33,7 +33,7 @@ gameManager = GameManager(gen)
 gameManager.spawn_mob(renderer.get_rect_list(gen.the_map))
 gameManager.create_chest()
 
-player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ], 1000, 5, 20, 1000,  renderer.get_rect_list(gen.the_map))
+player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ], 100, 5, 20, 50,  renderer.get_rect_list(gen.the_map))
 
 clock = pygame.time.Clock()
 

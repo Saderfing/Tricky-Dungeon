@@ -5,7 +5,7 @@ import math
 from utilities import Vec2
 
 class Livid(Entity):
-    def __init__(self, pos:list, map_rect:list, speed=5, HP=100) -> None:
+    def __init__(self, pos:list, map_rect:list, speed=5, HP=500) -> None:
         GFX = pygame.image.load('assets/livid.png').convert_alpha()
         HP, DF, SP, DMG = HP, 1, speed, 2
         
