@@ -70,6 +70,10 @@ while renderer.run:
         for projectil in gameManager.livid.daggers:
             renderer.draw_object(projectil)
 
+    if gameManager.livid_got_killed:
+        gameManager.livid_got_killed = False
+        end_lvl(gen, gameManager, player)
+    
     gameManager.check_mob_life()
     #pygame.draw.rect(screen, [0, 0, 255], player.rect)
     if len(gameManager.room_mob_dict.values()) == 0: renderer.draw_str("The candle (space)",[gen.room_list[-1].center[0]*renderer.TILE_SIZE - renderer.player_scroll[0] + 55,gen.room_list[-1].center[1]*renderer.TILE_SIZE - renderer.player_scroll[1]], (255, 255, 255), "small")

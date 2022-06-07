@@ -13,6 +13,7 @@ class GameManager:
 
         self.isBossSpawned = False
         self.livid = None
+        self.livid_got_killed = False
         
         self.loaded_mob = dict()
         self.targets = self.loaded_mob.values() + self.livid if self.livid is not None else self.loaded_mob.values()
@@ -48,6 +49,7 @@ class GameManager:
                 if 'livid' in self.loaded_mob.keys():
                     self.loaded_mob['livid'] = None
                 self.isBossSpawned = False
+                self.livid_got_killed = True
             
         ispot = self.chest.update(player)
         if not ispot == 0:
