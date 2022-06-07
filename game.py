@@ -3,6 +3,7 @@ from utilities import Vec2
 from random import randint
 from generation import Generator
 from bestiary import Goblin
+from utilities import Vec2
 
 class GameManager:
     def __init__(self, generator:Generator) -> None:
@@ -36,7 +37,10 @@ class GameManager:
             if self.potions[pot].used:
                 self.potions.pop(pot)
 
-
+    def create_chest(self):
+        for room in self.gen.room_list:
+            if room.room_type == "chest":
+                self.chest = Chest(room.center)
     def load_mob(self, player_pos):
         self.loaded_mob = dict()
         player_pos_v = Vec2(player_pos[0], player_pos[1])

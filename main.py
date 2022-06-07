@@ -8,7 +8,6 @@ from entity import Player
 from bestiary import Goblin
 from game import GameManager
 from utilities import Vec2
-
 pygame.init()
 def temp_end_lvl(gen_:Generator, gameManager_, player_):
     gen_.generate()
@@ -30,6 +29,7 @@ gen.generate()
 
 gameManager = GameManager(gen)
 gameManager.spawn_mob(renderer.get_rect_list(gen.the_map))
+gameManager.create_chest()
 
 player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ], 100, 5, 5, 50,  renderer.get_rect_list(gen.the_map))
 
@@ -86,6 +86,7 @@ while renderer.run:
         if event.type == player.PLAYER_DIE:
             gen.generate()
             gameManager.spawn_mob(renderer.get_rect_list(gen.the_map))
+            gameManager.create_chest()
             player = Player([gen.room_list[0].center[0]*renderer.TILE_SIZE,gen.room_list[0].center[1]*renderer.TILE_SIZE ], 100, 5, 5, 50,  renderer.get_rect_list(gen.the_map))
 
     clock.tick(renderer.FPS)

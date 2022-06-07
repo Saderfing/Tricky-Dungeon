@@ -155,6 +155,10 @@ class Generator:
         
         for room in range(1, len(self.room_list)):
             self.make_corridor(self.room_list[room-1].center, self.room_list[room].center)
+        
+        for room in self.room_list:
+            if room.room_type == "chest":
+                self.the_map[room.center[1]][room.center[0]] = 21
         self.the_map[self.room_list[-1].topleft[1]+8][self.room_list[-1].topleft[0]+8] = 20
 
 
