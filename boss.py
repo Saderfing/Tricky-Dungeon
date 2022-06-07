@@ -5,9 +5,9 @@ import math
 from utilities import Vec2
 
 class Livid(Entity):
-    def __init__(self, pos:list, map_rect:list, speed=5, HP=1000) -> None:
+    def __init__(self, pos:list, map_rect:list, speed=5, HP=100) -> None:
         GFX = pygame.image.load('assets/livid.png').convert_alpha()
-        HP, DF, SP, DMG = 1000, 50, speed, 10
+        HP, DF, SP, DMG = HP, 1, speed, 2
         
         super().__init__(pos, GFX, HP, DF, SP, DMG)
         self.sight_distance = 1000
@@ -60,11 +60,12 @@ class Livid(Entity):
         check_collide = self.pathfind(self.player.pos)
         if check_collide:
             self.collide()
-            
+        
         self.apply_movement()
         self.phases[self.current_phase]()
         self._child_manager()
-
+        return self.health
+        
     def pathfind(self, pos:list):
         check_collide = True
         local_pos = Vec2(pos[0] - self.pos[0], pos[1] - self.pos[1])
@@ -96,8 +97,6 @@ class Livid(Entity):
         self.rect.x = self.pos[0]
         self.rect.y = self.pos[1]
 
-        self.center = [self.pos[0] + int(self.width/2), self.pos[1] + int(self.height/2)]
-
     def _check_player_distance(self):
         player_vect = Vec2(self.player.pos[0], self.player.pos[1])
         self_vect = Vec2(self.pos[0], self.pos[1])
@@ -106,7 +105,7 @@ class Livid(Entity):
     
     def attack(self):
         dist = self._check_player_distance()
-        if dist <= 50 and self.current_time - self.last_hit >=0:
+        if dist <= 10 and self.current_time - self.last_hit >=0:
             self.player.apply_damage(self.dmg)
             self.last_hit = self.current_time + self.ATTACK_SPEED 
         
@@ -114,7 +113,7 @@ class Livid(Entity):
             self._choose_attack(dist)
             
     def _choose_attack(self, dist):
-        self.phases_wheight = self.DISTANTE_ATTACK if dist >= 500 else self.NORMAL_ATTACK
+        self.phases_wheight = self.DISTANTE_ATTACK if dist >= 100 else self.NORMAL_ATTACK
         self.current_phase = choices(self.PHASE_INDEXS, self.phases_wheight)[0]
         self.new_phase = self.current_time
         self.new_phase_delta = randint(0, 1000)
@@ -201,7 +200,6 @@ if __name__ == '__main__':
     clock = pygame.time.Clock()
     FPS = 60
     while True:
-        print(player.health)
         clock.tick(FPS)
         win.fill((0,0,0))
         player.update([WIDTH, HEIGHT], [boss, *boss.shadows])

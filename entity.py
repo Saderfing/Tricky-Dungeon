@@ -30,10 +30,7 @@ class Entity:
         self.velocity = [0, 0] # 2 integers to represent the x and y velocity
 
     def apply_damage(self, damage):
-
-        damage = round(damage//(self.defence + 1))
-
-
+        
         health = self.health
         health -= damage
         if health <= 0:
@@ -54,8 +51,8 @@ class Projectil:
         self.GFX = pygame.transform.rotate(self.GFX, -math.degrees(self.angle))
         self.width = self.GFX.get_width()
         self.height = self.GFX.get_height()
-
-        self.rect = self.GFX.get_rect(topleft=self.pos, width=self.width, height=self.height)
+        
+        self.rect = self.GFX.get_rect(topleft=self.pos)
         
     def update(self, targets:list):
         self.attack(targets)
@@ -64,8 +61,6 @@ class Projectil:
 
         self.life_time -= 1
         
-        
-
         self.apply_movement()
         
     def apply_movement(self):

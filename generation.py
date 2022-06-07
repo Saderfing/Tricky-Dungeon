@@ -17,7 +17,6 @@ class Room:
     def set_num_mob(self,new_num_mob:int):
         self.num_mob = new_num_mob
 
-
 class RoomManager:
     def __init__(self, num_room:int) -> None:
         self.num_room = num_room
@@ -160,7 +159,6 @@ class Generator:
             if room.room_type == "chest":
                 self.the_map[room.center[1]][room.center[0]] = 21
         self.the_map[self.room_list[-1].topleft[1]+8][self.room_list[-1].topleft[0]+8] = 20
-
 
 if __name__ == "__main__":
     import pygame

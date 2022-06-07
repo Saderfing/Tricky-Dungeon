@@ -1,4 +1,5 @@
 import pygame
+from boss import Livid
 from utilities import Vec2
 from random import randint
 from generation import Generator
@@ -10,8 +11,12 @@ class GameManager:
         self.gen = generator
         self.room_mob_dict = dict()
 
+        self.isBossSpawned = False
+        self.livid = None
+        
         self.loaded_mob = dict()
-
+        self.targets = self.loaded_mob.values() + self.livid if self.livid is not None else self.loaded_mob.values()
+        
         self.SIM_DIST = 400
         self.TSIZE = 50
 
@@ -27,8 +32,24 @@ class GameManager:
             room_index += 1
         self.room_mob_dict = mob_dict
 
+    def spawn_livid(self, rects):
+        self.livid = Livid([self.gen.room_list[-1].center[0] * self.TSIZE, self.gen.room_list[-1].center[1] * self.TSIZE], rects, 3, 100)
+        self.loaded_mob["livid"] = self.livid
+        self.isBossSpawned = True
 
     def update(self, player):
+        self.targets = [i for i in self.loaded_mob.values()] + [self.livid] if self.livid is not None else self.loaded_mob.values()
+        
+        if self.isBossSpawned:
+            print("e")
+            livid_state = self.livid.update(player)
+            print(livid_state)
+            if livid_state <= 0:
+                self.livid = None
+                if 'livid' in self.loaded_mob.keys():
+                    self.loaded_mob['livid'] = None
+                self.isBossSpawned = False
+            
         ispot = self.chest.update(player)
         if not ispot == 0:
             self.potions.append(ispot)
@@ -41,6 +62,7 @@ class GameManager:
         for room in self.gen.room_list:
             if room.room_type == "chest":
                 self.chest = Chest(room.center)
+
     def load_mob(self, player_pos):
         self.loaded_mob = dict()
         player_pos_v = Vec2(player_pos[0], player_pos[1])
@@ -54,7 +76,6 @@ class GameManager:
             if Vec2.Distance(player_pos_v, mob_pos_v) < self.SIM_DIST:
                 self.loaded_mob[mob] = self.room_mob_dict[mob]
 
-
     def check_mob_life(self):
         loaded =  self.loaded_mob.copy()
         room_mob = self.room_mob_dict.copy()
@@ -67,7 +88,6 @@ class GameManager:
         if isChanged:
             self.loaded_mob = loaded.copy()
             self.room_mob_dict = room_mob.copy()
-
 
     def create_mob(self):
         self.gen.generate()
@@ -87,6 +107,7 @@ class Chest:
                 self.opened = True
                 potion = Potion([self.pos[0]- 50, self.pos[1] + 50])
         return potion
+
 class Potion:
     def __init__(self, pos) -> None:
         self.pos = pos
